@@ -5,7 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controller
 {
-    [Route("api/[controller]")]
+//We use route api/controller instead of api/products at here 
+//because we dont want to hardcode so if we change the class name later it will still know which controller to navigate
+
+[Route("api/[controller]")]
 [ApiController]
 public class ProductsController : ControllerBase
 {
@@ -33,7 +36,25 @@ public class ProductsController : ControllerBase
 
         return Ok(productDtos);
     }
-
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ProductDto>> GetProductByID(int id)
+    {
+        var product = await _productRepository.GetProductByID(id);
+        if(product == null)
+            {
+                return NotFound();
+            }
+        var productDto = new ProductDto
+        {
+            Id = product.Id,
+            Name = product.Name,
+            Description = product.Description,
+            Price = product.Price,
+            ImageUrl = product.ImageUrl,
+            CategoryId = product.CategoryId
+        };
+                return Ok(productDto);
+    }
     [HttpPost]
     public async Task<ActionResult<ProductDto>> CreateProduct(ProductDto productDto)
     {
@@ -48,7 +69,7 @@ public class ProductsController : ControllerBase
 
         var createdProduct = await _productRepository.AddAsync(newProduct);
         productDto.Id = createdProduct.Id;
-        
+        //return at 201 Created status special method built into .NET .
         return CreatedAtAction(nameof(GetProducts), new { id = productDto.Id }, productDto);
     }
 }

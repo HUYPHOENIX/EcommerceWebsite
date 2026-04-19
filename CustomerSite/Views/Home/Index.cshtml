@@ -1,8 +1,185 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@using SharedViewModel.DTOs
+@using System.Runtime.CompilerServices
+
+@model IEnumerable<ProductDto>
+@{
+    ViewData["Title"] = "Trang chủ - Clothing Shop";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+<style>
+    /* Bo góc và cố định chiều cao Carousel */
+    .custom-carousel {
+        border-radius: 20px;
+        overflow: hidden;
+        margin-top: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .banner-img {
+        height: 550px;
+        object-fit: cover;
+    }
+
+    /* Hiệu ứng cho các Product Cards */
+    .product-card {
+        border: none;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 15px;
+        overflow: hidden;
+    }
+
+    .product-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+
+    .product-img-wrapper {
+        height: 350px;
+        overflow: hidden;
+    }
+
+    .product-img-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .product-card:hover .product-img-wrapper img {
+        transform: scale(1.1);
+    }
+
+    /* Category Section */
+    .category-box {
+        position: relative;
+        height: 250px;
+        border-radius: 15px;
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+    .category-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .category-overlay {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 1.5rem;
+        transition: background 0.3s ease;
+    }
+
+    .category-box:hover .category-overlay {
+        background: rgba(0,0,0,0.5);
+    }
+</style>
+
+<div class="container">
+    <div id="heroCarousel" class="carousel slide custom-carousel shadow-sm" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="~/images/banner1.jpg" class="d-block w-100 banner-img" alt="Summer Collection">
+                <div class="carousel-caption d-none d-md-block text-start mb-5">
+                    <h1 class="display-3 fw-bold">BST Mùa Hè 2026</h1>
+                    <p class="fs-4">Giảm giá lên đến 50% cho tất cả sản phẩm.</p>
+                    <a href="/Products" class="btn btn-dark btn-lg px-5 rounded-pill">Mua Ngay</a>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="~/images/banner2.jpg" class="d-block w-100 banner-img" alt="New Arrivals">
+                <div class="carousel-caption d-none d-md-block">
+                    <h1 class="display-3 fw-bold">Hàng Mới Về</h1>
+                    <p class="fs-4">Phong cách tối giản cho người hiện đại.</p>
+                    <a href="/Products" class="btn btn-light btn-lg px-5 rounded-pill">Khám Phá</a>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="~/images/banner3.jpg" class="d-block w-100 banner-img" alt="New Arrivals">
+                <div class="carousel-caption d-none d-md-block">
+                    <h1 class="display-3 fw-bold">Lịch lãm và thời thương</h1>
+                    <p class="fs-4">Lựa chọn của những người đàn ông nam tính.</p>
+                    <a href="/Products" class="btn btn-light btn-lg px-5 rounded-pill">Khám Phá</a>
+                </div>
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
+    </div>
+
+    <div class="row mt-5 g-4">
+        <div class="col-md-4">
+            <div class="category-box">
+                <img src="~/images/men-cat.jpg" alt="Đồ Nam">
+                <div class="category-overlay">THỜI TRANG NAM</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="category-box">
+                <img src="~/images/women-cat.jpg" alt="Đồ Nữ">
+                <div class="category-overlay">THỜI TRANG NỮ</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="category-box">
+                <img src="~/images/acc-cat.jpg" alt="Phụ Kiện">
+                <div class="category-overlay">PHỤ KIỆN</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-5 mb-5">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <h2 class="fw-bold mb-0">Sản phẩm nổi bật</h2>
+                <p class="text-muted">Được lựa chọn nhiều nhất trong tuần qua</p>
+            </div>
+            <a href="/Products" class="text-dark fw-bold text-decoration-none border-bottom border-dark">Xem tất cả</a>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+            @foreach (var item in Model.Take(4))
+            {
+                <div class="col">
+                    <div class="card h-100 product-card shadow-sm">
+                        <div class="product-img-wrapper">
+                            <img src="~/images/product" alt="Sản phẩm">
+                        </div>
+                        <div class="card-body text-center">
+                            <h5 class="card-title text-truncate">@item.Name</h5>
+                            <p class="card-text text-danger fw-bold">@item.Price</p>
+                            <div class="d-grid px-3">
+                                <button class="btn btn-outline-dark rounded-pill py-2">Thêm vào giỏ</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="bg-light py-5 mt-5">
+    <div class="container text-center">
+        <h3 class="fw-bold">Đừng bỏ lỡ ưu đãi!</h3>
+        <p class="text-muted">Nhận thông báo về bộ sưu tập mới và các chương trình khuyến mãi sớm nhất.</p>
+        <div class="row justify-content-center mt-4">
+            <div class="col-md-6 d-flex">
+                <input type="email" class="form-control rounded-pill me-2 px-4" placeholder="Nhập email của bạn...">
+                <button class="btn btn-dark rounded-pill px-4">Đăng ký</button>
+            </div>
+        </div>
+    </div>
 </div>
