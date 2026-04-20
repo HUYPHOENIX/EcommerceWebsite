@@ -1,0 +1,64 @@
+@model SharedViewModel.DTOs.ProductDto
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="container mt-5">
+    <div class="mb-4">
+        <a asp-action="Index" class="text-decoration-none text-secondary">
+            &larr; Back to Catalog
+        </a>
+    </div>
+
+    <div class="row bg-white shadow-sm rounded p-4">
+        @* Left Column: Big Image *@
+        <div class="col-md-6 text-center">
+            <img src="https://via.placeholder.com/600x400?text=No+Image" class="img-fluid rounded" alt="@Model.Name">
+        </div>
+
+        @* Right Column: Product Info *@
+        <div class="col-md-6 d-flex flex-column justify-content-center">
+            <h1 class="display-5 fw-bold text-dark">@Model.Name</h1>
+            <h2 class="text-success fw-bold mb-4">$@Model.Price</h2>
+            
+            <p class="lead text-secondary mb-4">
+                @Model.Description
+            </p>
+
+            @* --- NEW: COLOR SELECTION --- *@
+            @if(Model.Colors != null && Model.Colors.Any())
+            {
+                <div class="mb-3">
+                    <label class="fw-bold mb-2">Select Color:</label><br>
+                    <div class="btn-group" role="group">
+                        @foreach(var color in Model.Colors)
+                        {
+                            <input type="radio" class="btn-check" name="selectedColor" id="color_@color" autocomplete="off">
+                            <label class="btn btn-outline-dark" for="color_@color">@color</label>
+                        }
+                    </div>
+                </div>
+            }
+
+            @* --- NEW: SIZE SELECTION --- *@
+            @if(Model.Sizes != null && Model.Sizes.Any())
+            {
+                <div class="mb-4">
+                    <label class="fw-bold mb-2">Select Size:</label><br>
+                    <div class="btn-group" role="group">
+                        @foreach(var size in Model.Sizes)
+                        {
+                            <input type="radio" class="btn-check" name="selectedSize" id="size_@size" autocomplete="off">
+                            <label class="btn btn-outline-secondary px-4" for="size_@size">@size</label>
+                        }
+                    </div>
+                </div>
+            }
+
+            <div class="d-grid gap-2 mt-auto">
+                <button class="btn btn-primary btn-lg fw-bold">Add to Cart</button>
+            </div>
+        </div>
+    </div>
+</div>

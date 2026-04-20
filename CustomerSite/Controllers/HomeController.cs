@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using CustomerSite.Models;
 using SharedViewModel.DTOs;
 using System.Text.Json;
+using Microsoft.VisualBasic;
 
 namespace CustomerSite.Controllers;
 
@@ -34,15 +35,5 @@ public class HomeController : Controller
             return View(products);
         }
         return View(new List<ProductDto>());
-    }
-
-    public IActionResult Privacy()
-    {
-        return View();
-    }
-
-    public IActionResult Error()
-    {
-        return View(Request.Body);
     }
 }

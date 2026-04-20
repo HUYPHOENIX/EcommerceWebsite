@@ -10,6 +10,8 @@ namespace SharedViewModel.DTOs
         [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; }
         public string? ImageUrl { get; set; }
+        public List<string> Sizes { get; set; } = new List<string>();
+        public List<string> Colors { get; set; } = new List<string>();
 
         // We keep the CategoryId so we know what category it belongs to, 
         // but we do NOT include the actual Category object here.

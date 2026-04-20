@@ -31,6 +31,8 @@ public class ProductsController : ControllerBase
             Description = p.Description,
             Price = p.Price,
             ImageUrl = p.ImageUrl,
+            Colors = p.Colors,
+            Sizes = p.Sizes,
             CategoryId = p.CategoryId
         });
 
@@ -51,6 +53,8 @@ public class ProductsController : ControllerBase
             Description = product.Description,
             Price = product.Price,
             ImageUrl = product.ImageUrl,
+            Colors = product.Colors,
+            Sizes = product.Sizes,
             CategoryId = product.CategoryId
         };
                 return Ok(productDto);
@@ -64,6 +68,8 @@ public class ProductsController : ControllerBase
             Description = productDto.Description,
             Price = productDto.Price,
             ImageUrl = productDto.ImageUrl,
+            Colors = productDto.Colors,
+            Sizes = productDto.Sizes,
             CategoryId = productDto.CategoryId
         };
 
