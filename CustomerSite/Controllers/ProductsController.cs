@@ -1,35 +1,23 @@
+using CustomerSite.Interfaces;
+using CustomerSite.Services;
 using Microsoft.AspNetCore.Mvc;
 using SharedViewModel.DTOs;
 
 public class ProductsController : Controller
 {
-    private readonly IHttpClientFactory _httpIHttpClientFactory;
-
-    public ProductsController (IHttpClientFactory httpClientFactory)
+    private readonly IProductApiClient _IProductApiClient;
+    public ProductsController(IProductApiClient productApiClient)
     {
-        _httpIHttpClientFactory = httpClientFactory;
-    }
-
-    public IActionResult Index()
-    {
-        return View();
+        _IProductApiClient = productApiClient;
     }
 
     public async Task<IActionResult> Detail(int id)
     {
-        var client = _httpIHttpClientFactory.CreateClient("Api");
-        var response = await client.GetAsync($"api/products/{id}");
-        if (response.IsSuccessStatusCode)
+        var product = await _IProductApiClient.GetProductByIdAsync(id);
+        if(product == null)
         {
-            var product = await response.Content.ReadFromJsonAsync<ProductDto> ();
-
-            if(product == null)
-            {
-                return NotFound();
-            }
-
-            return View(product);
+            return NotFound();
         }
-        return RedirectToAction("Index");
+        return View(product);
     }
 }

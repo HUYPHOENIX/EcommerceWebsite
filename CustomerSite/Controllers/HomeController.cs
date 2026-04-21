@@ -4,36 +4,24 @@ using CustomerSite.Models;
 using SharedViewModel.DTOs;
 using System.Text.Json;
 using Microsoft.VisualBasic;
+using CustomerSite.Interfaces;
 
 namespace CustomerSite.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly IHttpClientFactory _httpIHttpClientFactory;
-    public HomeController (IHttpClientFactory httpClientFactory)
+    private readonly IProductApiClient _IProductApiClient;
+    public HomeController (IProductApiClient productApiClient)
     {
-        _httpIHttpClientFactory = httpClientFactory;
+       _IProductApiClient = productApiClient;
     }
     public async Task<IActionResult> Index()
     {
-        // 1. Create the client we configured in Program.cs
-        var client = _httpIHttpClientFactory.CreateClient("Api");
-
-        // 2. Make a GET request to your API
-        var response = await client.GetAsync("api/products");
-
-        if(response.IsSuccessStatusCode)
+        var products = await _IProductApiClient.GetAllProductsAsync();
+        if(products == null)
         {
-            var products = await response.Content.ReadFromJsonAsync<IEnumerable<ProductDto>>();
-
-            //We will check null here and check empty outside
-            if(products == null)
-            {
-                return View(new List<ProductDto>());
-            }
-            
-            return View(products);
+            return NotFound();
         }
-        return View(new List<ProductDto>());
+        return View(products);
     }
 }

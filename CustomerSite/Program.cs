@@ -1,11 +1,14 @@
+using CustomerSite.Interfaces;
+using CustomerSite.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 //-- APi --//
-builder.Services.AddHttpClient("Api", client =>
+builder.Services.AddHttpClient<IProductApiClient, ProductApiClient>(client =>
 {
-    client.BaseAddress = new Uri("http://localhost:5007");
+    client.BaseAddress = new Uri("http://localhost:5007"); 
 });
 var app = builder.Build();
 
