@@ -3,7 +3,7 @@
 
 @model IEnumerable<ProductDto>
 @{
-    ViewData["Title"] = "Trang chủ - Clothing Shop";
+    ViewData["Title"] = "Trang chủ";
 }
 
 
@@ -165,8 +165,7 @@
                                                         <p class="card-text text-danger fw-bold">@item.Price</p>
                                                         <div class="d-grid px-3">
                                                             <button class="btn btn-outline-dark rounded-pill py-2">
-                                                                <a asp-controller="Products" asp-action="Detail" asp-route-id=@item.Id>Thêm vào
-                                                                    giỏ</a></button>
+                                                                <a asp-controller="Products" asp-action="Detail" asp-route-id=@item.Id>Mua ngay</a></button>
                                                                 </div>
                                                             </div>
                                                         </div>

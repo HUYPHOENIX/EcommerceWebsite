@@ -7,7 +7,7 @@
 <div class="container mt-5">
     <div class="mb-4">
         <a asp-action="Index" class="text-decoration-none text-secondary">
-            &larr; Back to Catalog
+            &larr; Trờ về 
         </a>
     </div>
 
@@ -27,38 +27,51 @@
             </p>
 
             @* --- NEW: COLOR SELECTION --- *@
-            @if(Model.Colors != null && Model.Colors.Any())
-            {
-                <div class="mb-3">
-                    <label class="fw-bold mb-2">Select Color:</label><br>
-                    <div class="btn-group" role="group">
-                        @foreach(var color in Model.Colors)
-                        {
-                            <input type="radio" class="btn-check" name="selectedColor" id="color_@color" autocomplete="off">
-                            <label class="btn btn-outline-dark" for="color_@color">@color</label>
-                        }
-                    </div>
-                </div>
-            }
+            <form asp-controller="Cart" asp-action="Add" method="post">
+                @* We hide the ProductId so the form sends it secretly in the background *@
+                <input type="hidden" name="Id" value="@Model.Id" />
 
-            @* --- NEW: SIZE SELECTION --- *@
-            @if(Model.Sizes != null && Model.Sizes.Any())
-            {
+                @if (Model.Colors != null && Model.Colors.Any())
+                {
+                    <div class="mb-3">
+                        <label class="fw-bold mb-2">Chọn màu:</label><br>
+                        <div class="btn-group" role="group">
+                            @foreach (var color in Model.Colors)
+                            {
+                                <input type="radio" class="btn-check" name="Color" id="@color" autocomplete="off" value="@color"
+                                       required>
+                                <label class="btn btn-outline-dark" for="@color">@color</label>
+                            }
+                        </div>
+                    </div>
+                }
+
+                @* --- NEW: SIZE SELECTION --- *@
+                @if (Model.Sizes != null && Model.Sizes.Any())
+                {
+                    <div class="mb-4">
+                        <label class="fw-bold mb-2">Chọn Size:</label><br>
+                        <div class="btn-group" role="group">
+                            @foreach (var size in Model.Sizes)
+                            {
+                                <input type="radio" class="btn-check" name="Size" id="@size" autocomplete="off" value="@size"
+                                       required>
+                                <label class="btn btn-outline-secondary px-4" for="@size">@size</label>
+                            }
+                        </div>
+                    </div>
+                }
+                @* --- NEW: QUANTITY SELECTION --- *@
                 <div class="mb-4">
-                    <label class="fw-bold mb-2">Select Size:</label><br>
-                    <div class="btn-group" role="group">
-                        @foreach(var size in Model.Sizes)
-                        {
-                            <input type="radio" class="btn-check" name="selectedSize" id="size_@size" autocomplete="off">
-                            <label class="btn btn-outline-secondary px-4" for="size_@size">@size</label>
-                        }
-                    </div>
+                    <label class="fw-bold mb-2">Quantity:</label>
+                    @* name="Quantity" MUST match the word in your Controller! *@
+                    <input type="number" name="Quantity" class="form-control form-control-lg w-25" value="1" min="1"
+                           max="99" required>
                 </div>
-            }
-
-            <div class="d-grid gap-2 mt-auto">
-                <button class="btn btn-primary btn-lg fw-bold">Add to Cart</button>
-            </div>
+                <div class="d-grid gap-2 mt-auto">
+                    <button type="submit" class="btn btn-primary btn-lg fw-bold">Thêm vào giỏ hàng</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

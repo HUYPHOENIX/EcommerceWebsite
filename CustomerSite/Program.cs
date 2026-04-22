@@ -8,8 +8,23 @@ builder.Services.AddControllersWithViews();
 //-- APi --//
 builder.Services.AddHttpClient<IProductApiClient, ProductApiClient>(client =>
 {
-    client.BaseAddress = new Uri("http://localhost:5007"); 
+    client.BaseAddress = new Uri("http://localhost:5007");
 });
+
+//-- Session to save temp cart --//
+builder.Services
+    .AddDistributedMemoryCache()
+    .AddSession(options =>
+    {
+        options.IdleTimeout = TimeSpan.FromMinutes(10);
+        options.Cookie.HttpOnly = true;
+        options.Cookie.IsEssential = true;
+
+    })
+    .AddHttpContextAccessor()
+    .AddScoped<ICartService, CartService>();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -23,6 +38,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
+app.UseSession();
 app.UseAuthorization();
 
 app.MapStaticAssets();
