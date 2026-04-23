@@ -27,9 +27,10 @@
                         <tr>
                             <th class="ps-4">Tên sản phẩm</th>
                             <th>Mô tả</th>
-                            <th>Giá</th>
+                            <th class="ps-4">Giá</th>
                             <th>Số lượng</th>
                             <th class="pe-4 text-end">Tổng tiền</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -42,10 +43,23 @@
                                     Color: @item.Color
                                 </td>
                                 @* .ToString("C") automatically formats the number as Currency (e.g. $15.00) *@
-                                <td>@item.Price.ToString("C")</td>
-                                <td>@item.Quantity</td>
+                                <td class="ps-4">@item.Price VND</td>
+                                <td >@item.Quantity</td>
                                 <td class="pe-4 text-end fw-bold text-success">
-                                    @((item.Price * item.Quantity).ToString("C"))
+                                    @((item.Price * item.Quantity)) VND
+                                </td>
+
+                                <td class="text-end pe-4">
+                                    <form asp-controller="Cart" asp-action="Remove" method="post">
+                                        @* We hide the data so the server knows EXACTLY which item to delete *@
+                                        <input type="hidden" name="productId" value="@item.ProductId" />
+                                        <input type="hidden" name="color" value="@item.Color" />
+                                        <input type="hidden" name="size" value="@item.Size" />
+        
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            Xóa
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         }
@@ -55,8 +69,9 @@
                             <td colspan="4" class="text-end fw-bold fs-4 py-3">Tạm tính:</td>
                             <td class="pe-4 text-end fw-bold fs-4 text-success py-3">
                                 @* We ask C# to loop through the cart and add up (Price * Quantity) for us! *@
-                                @Model.Sum(x => x.Price * x.Quantity).ToString("C")
+                                @Model.Sum(x => x.Price * x.Quantity) VND
                             </td>
+                            <td></td>
                         </tr>
                     </tfoot>
                 </table>

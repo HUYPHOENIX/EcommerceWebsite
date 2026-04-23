@@ -41,7 +41,14 @@ public class CartController : Controller
             Size = Size,
             Color = Color
         });
-        
+
         return RedirectToAction("Index", "Home");
+    }
+
+    [HttpPost]
+    public IActionResult Remove(int productId, string color, string size)
+    {
+        _cartService.RemoveItem(productId,color,size);
+        return RedirectToAction("Index");
     }
 }
