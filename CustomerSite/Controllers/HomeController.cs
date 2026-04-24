@@ -1,9 +1,4 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using CustomerSite.Models;
-using SharedViewModel.DTOs;
-using System.Text.Json;
-using Microsoft.VisualBasic;
 using CustomerSite.Interfaces;
 
 namespace CustomerSite.Controllers;

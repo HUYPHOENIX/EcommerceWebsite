@@ -8,7 +8,6 @@
 <div class="container mt-5">
     <h2 class="fw-bold mb-4">Giỏ hàng của bạn</h2>
 
-    @* 1. CHECK: Is the cart empty? *@
     @if (Model == null || !Model.Any())
     {
         <div class="alert alert-secondary shadow-sm text-center p-5">
@@ -42,16 +41,16 @@
                                     Size: @item.Size <br />
                                     Color: @item.Color
                                 </td>
-                                @* .ToString("C") automatically formats the number as Currency (e.g. $15.00) *@
+                                
                                 <td class="ps-4">@item.Price VND</td>
-                                <td >@item.Quantity</td>
+                                <td>@item.Quantity</td>
                                 <td class="pe-4 text-end fw-bold text-success">
                                     @((item.Price * item.Quantity)) VND
                                 </td>
 
                                 <td class="text-end pe-4">
                                     <form asp-controller="Cart" asp-action="Remove" method="post">
-                                        @* We hide the data so the server knows EXACTLY which item to delete *@
+                       
                                         <input type="hidden" name="productId" value="@item.ProductId" />
                                         <input type="hidden" name="color" value="@item.Color" />
                                         <input type="hidden" name="size" value="@item.Size" />
@@ -68,7 +67,6 @@
                         <tr>
                             <td colspan="4" class="text-end fw-bold fs-4 py-3">Tạm tính:</td>
                             <td class="pe-4 text-end fw-bold fs-4 text-success py-3">
-                                @* We ask C# to loop through the cart and add up (Price * Quantity) for us! *@
                                 @Model.Sum(x => x.Price * x.Quantity) VND
                             </td>
                             <td></td>
@@ -80,7 +78,9 @@
 
         <div class="d-flex justify-content-between mt-4">
             <a asp-controller="Home" asp-action="Index" class="btn btn-outline-dark btn-lg">Tiếp tục mua hàng</a>
-            <button class="btn btn-success btn-lg px-5 shadow">Tiến hành thanh toán</button>
+            <a asp-Controller="Payment" asp-action="Index">
+                <button class="btn btn-success btn-lg px-5 shadow">Tiến hành thanh toán</button>
+            </a>
         </div>
     }
 </div>

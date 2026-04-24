@@ -9,13 +9,11 @@ public class CategoryRepository : ICategoryRepository
 {
     private readonly AppDbContext _context;
 
-    // We inject the database context into the constructor
     public CategoryRepository(AppDbContext context)
     {
         _context = context;
     }
 
-    //
     public async Task<IEnumerable<Category>> GetAllAsync()
     {
         return await _context.Categories.ToListAsync();
@@ -30,7 +28,7 @@ public class CategoryRepository : ICategoryRepository
     {
         _context.Categories.Add(category);
         await _context.SaveChangesAsync();
-        return category; // Returns the category with its new SQL ID attached
+        return category; 
     }
     
     public async Task UpdateAsync(Category category)

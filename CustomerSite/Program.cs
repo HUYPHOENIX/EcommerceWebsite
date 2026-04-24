@@ -6,10 +6,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 //-- APi --//
-builder.Services.AddHttpClient<IProductApiClient, ProductApiClient>(client =>
-{
-    client.BaseAddress = new Uri("http://localhost:5007");
-});
+builder.Services.AddBackendApiClients(builder.Configuration);
+
 
 //-- Session to save temp cart --//
 builder.Services

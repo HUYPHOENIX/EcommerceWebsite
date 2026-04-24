@@ -30,7 +30,7 @@ namespace CustomerSite.Services
             {
                 return await response.Content.ReadFromJsonAsync<ProductDto>();
             }
-            return null; // Return null if it fails or 404s
+            return null; 
         }
     }
 }

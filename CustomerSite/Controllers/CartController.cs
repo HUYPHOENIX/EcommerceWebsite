@@ -3,14 +3,12 @@ using CustomerSite.Interfaces;
 using CustomerSite.Models;
 
 
-namespace EcommerceShop.Web.Controllers;
+namespace CustomerSite.Controllers;
 
 public class CartController : Controller
 {
     private readonly IProductApiClient _productApiClient;
-    private readonly ICartService _cartService; // 1. Create a spot for the manager
-
-    // 2. Ask for the manager in the constructor
+    private readonly ICartService _cartService; 
     public CartController(IProductApiClient productApiClient, ICartService cartService)
     {
         _productApiClient = productApiClient;

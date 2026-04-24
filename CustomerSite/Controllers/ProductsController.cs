@@ -1,8 +1,6 @@
 using CustomerSite.Interfaces;
-using CustomerSite.Services;
 using Microsoft.AspNetCore.Mvc;
-using SharedViewModel.DTOs;
-
+namespace CustomerSite.Controllers;
 public class ProductsController : Controller
 {
     private readonly IProductApiClient _IProductApiClient;

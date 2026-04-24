@@ -60,9 +60,6 @@ public class CartService : ICartService
         Session?.Remove("ShoppingCart");
     }
 
-    // ---------------------------------------------------
-    // 3. PRIVATE HELPER METHODS (Replaces Extensions)
-    // ---------------------------------------------------
 
     private void SetJson(string key, object value)
     {

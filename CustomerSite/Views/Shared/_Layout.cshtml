@@ -30,31 +30,30 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         @{
-                            // 1. Ask the service for the cart
-                            var cart = CartService.GetCart();
+                            if (ViewData["HideCart"] == null || (bool)ViewData["HideCart"]! == true)
+                            {
+                                var cart = CartService.GetCart();
     
-                            // 2. Count the total QUANTITY of items (not just the number of rows)
-                            var totalItems = cart.Sum(item => item.Quantity);
-                        }
-
-                        <ul class="navbar-nav ms-auto">
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Cart"
-                                       asp-action="Index">
-                                       Cart
+                                var totalItems = cart.Sum(item => item.Quantity);
+                                <ul class="navbar-nav ms-auto">
+                                    <li class="nav-item">
+                                        <a class="nav-link" asp-controller="Cart" asp-action="Index">
+                                            Cart
             
-                                    @* 3. Only show the red bubble if they actually have items! *@
-                                    @if (totalItems > 0)
-                                    {
-                                        <span
-                                            class=" badge rounded-pill bg-danger">
-                                            @totalItems
-                                            <span class="visually-hidden">items in cart</span>
-                                        </span>
-                                    }
-                                </a>
-                            </li>
-                        </ul>
+                                            @* 3. Only show the red bubble if they actually have items! *@
+                                            @if (totalItems > 0)
+                                            {
+                                                <span class=" badge rounded-pill bg-danger">
+                                                    @totalItems
+                                                    <span class="visually-hidden">items in cart</span>
+                                                </span>
+                                            }
+                                        </a>
+                                    </li>
+                                </ul>
+                            }
+                            
+                        }
                     </ul>
                 </div>
             </div>
