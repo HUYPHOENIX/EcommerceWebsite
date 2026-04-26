@@ -6,13 +6,12 @@ namespace CustomerSite.Controllers;
 
 public class PaymentController : Controller
 {
-    private readonly IOrderApiClient _orderApiClient;
-    // Inject your Cart/Session service here so we can get the user's items
+    private readonly IOrderApiService _orderApiService;
     private readonly ICartService _cartService;
 
-    public PaymentController(IOrderApiClient orderApiClient, ICartService cartService)
+    public PaymentController(IOrderApiService orderApiService, ICartService cartService)
     {
-        _orderApiClient = orderApiClient;
+       _orderApiService = orderApiService;
         _cartService = cartService;
     }
 
@@ -41,7 +40,7 @@ public class PaymentController : Controller
             }).ToList()
         };
 
-        var newOrderId = await _orderApiClient.CreateOrderAsync(orderRequest);
+        var newOrderId = await  _orderApiService.CreateOrderAsync(orderRequest);
         if (newOrderId.HasValue)
         {
             _cartService.ClearCart();

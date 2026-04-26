@@ -4,6 +4,7 @@ namespace BussinessLogic.Interfaces
 {
     public interface IProductRepository
     {
+        Task<(IEnumerable<Product> Items, int TotalCount)> GetProductsByPageAsync(int? CategoryId, int PageNumber, int PageSize);
         Task<IEnumerable<Product>> GetAllAsync();
         Task<Product?> GetProductByID(int id);
         Task<Product> AddAsync(Product product);

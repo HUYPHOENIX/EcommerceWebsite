@@ -5,15 +5,15 @@ namespace CustomerSite.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly IProductApiClient _IProductApiClient;
-    public HomeController (IProductApiClient productApiClient)
+    private readonly IProductApiService _productApiService;
+    public HomeController(IProductApiService productApiClient)
     {
-       _IProductApiClient = productApiClient;
+        _productApiService = productApiClient;
     }
     public async Task<IActionResult> Index()
     {
-        var products = await _IProductApiClient.GetAllProductsAsync();
-        if(products == null)
+        var products = await _productApiService.GetAllProductsAsync();
+        if (products == null)
         {
             return NotFound();
         }

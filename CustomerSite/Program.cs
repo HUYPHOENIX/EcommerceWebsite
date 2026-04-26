@@ -6,21 +6,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 //-- APi --//
-builder.Services.AddBackendApiClients(builder.Configuration);
+builder.Services.AddApiService(builder.Configuration);
+//-- Session --//
+builder.Services.AddSessionService();
 
-
-//-- Session to save temp cart --//
-builder.Services
-    .AddDistributedMemoryCache()
-    .AddSession(options =>
-    {
-        options.IdleTimeout = TimeSpan.FromMinutes(10);
-        options.Cookie.HttpOnly = true;
-        options.Cookie.IsEssential = true;
-
-    })
-    .AddHttpContextAccessor()
-    .AddScoped<ICartService, CartService>();
 
 
 var app = builder.Build();

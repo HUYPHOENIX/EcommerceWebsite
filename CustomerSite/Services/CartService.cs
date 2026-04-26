@@ -64,9 +64,7 @@ public class CartService : ICartService
     private void SetJson(string key, object value)
     {
         if (Session == null) return;
-        //This code is to turn C# data in to Json type
         var jsonText = JsonSerializer.Serialize(value);
-        //Add this to session with key "ShoppingCart" value is json form of cart
         Session.SetString(key, jsonText);
     }
 
@@ -78,7 +76,6 @@ public class CartService : ICartService
         {
             return default;
         }
-        // This code is reverse of thing above from json to c#
         return JsonSerializer.Deserialize<T>(sessionData);
     }
 }

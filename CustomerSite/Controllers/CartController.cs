@@ -7,9 +7,9 @@ namespace CustomerSite.Controllers;
 
 public class CartController : Controller
 {
-    private readonly IProductApiClient _productApiClient;
+    private readonly IProductApiService _productApiClient;
     private readonly ICartService _cartService; 
-    public CartController(IProductApiClient productApiClient, ICartService cartService)
+    public CartController(IProductApiService productApiClient, ICartService cartService)
     {
         _productApiClient = productApiClient;
         _cartService = cartService;

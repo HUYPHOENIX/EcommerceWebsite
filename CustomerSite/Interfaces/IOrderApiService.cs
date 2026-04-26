@@ -2,7 +2,7 @@ using SharedViewModel.DTOs;
 
 namespace CustomerSite.Interfaces;
 
-public interface IOrderApiClient
+public interface IOrderApiService
 {
     Task<int?> CreateOrderAsync(OrderRequestDto request);
 }

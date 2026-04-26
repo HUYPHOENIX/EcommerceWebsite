@@ -3,25 +3,25 @@ using SharedViewModel.DTOs;
 using BussinessLogic.Entities;
 using BussinessLogic.Interfaces;
 
-namespace Api.Controller
+namespace Api.Controllers
 {
 
     [Route("api/[controller]")]
     [ApiController]
     public class OrderController : ControllerBase
     {
-        private readonly IOrderRepository _IOrderRepository;
+        private readonly IOrderRepository _orderRepository;
         public OrderController(IOrderRepository OrderRepository)
         {
-            _IOrderRepository = OrderRepository;
+            _orderRepository = OrderRepository;
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateOrder([FromBody] OrderRequestDto request)
         {
-            if (request.Items == null || !request.Items.Any())
+            if (request?.Items == null || !request.Items.Any())
             { return BadRequest("Order is Empty or null"); }
-            var newOder = new Order
+            var newOrder = new Order
             {
                 UserId = request.UserId,
                 OrderDate = DateTime.UtcNow,
@@ -37,7 +37,7 @@ namespace Api.Controller
                 }).ToList()
             };
 
-            var createdOrderId = await _IOrderRepository.CreateOrderAsync(newOder);
+            var createdOrderId = await _orderRepository.CreateOrderAsync(newOrder);
             return Ok(new { OrderId = createdOrderId, Message = "Order created successfully." });
 
         }
@@ -46,7 +46,7 @@ namespace Api.Controller
         public async Task<IActionResult> GetOrder(int id)
         {
             // FETCH: Get Entity from Infrastructure
-            var orderEntity = await _IOrderRepository.GetOrderByIdAsync(id);
+            var orderEntity = await _orderRepository.GetOrderByIdAsync(id);
 
             if (orderEntity == null) return NotFound($"Order {id} not found.");
 

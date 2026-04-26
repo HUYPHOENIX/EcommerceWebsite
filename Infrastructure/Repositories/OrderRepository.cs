@@ -7,23 +7,23 @@ namespace Infrastructure.Repositories;
 
 public class OrderRepository : IOrderRepository
 {
-    private readonly AppDbContext _appDbContext;
-    public OrderRepository(AppDbContext appDbContext)
+    private readonly AppDbContext _Context;
+    public OrderRepository(AppDbContext context)
     {
-        _appDbContext = appDbContext;
+        _Context = context;
     }
 
     public async Task<int> CreateOrderAsync(Order order)
     {
-        _appDbContext.Orders.Add(order);
-        await _appDbContext.SaveChangesAsync();
+        _Context.Orders.Add(order);
+        await _Context.SaveChangesAsync();
 
         return order.Id;
     }
 
     public async Task<Order?> GetOrderByIdAsync(int id)
     {
-        return await _appDbContext.Orders
-        .Include(o => o.OrderItems).FirstOrDefaultAsync(o => o.Id == id);
+        return await _Context.Orders
+        .Include(ListItem => ListItem.OrderItems).FirstOrDefaultAsync(ListItem => ListItem.Id == id);
     }
 }

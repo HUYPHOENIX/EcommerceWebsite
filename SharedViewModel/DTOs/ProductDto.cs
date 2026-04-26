@@ -12,9 +12,6 @@ namespace SharedViewModel.DTOs
         public string? ImageUrl { get; set; }
         public List<string> Sizes { get; set; } = new List<string>();
         public List<string> Colors { get; set; } = new List<string>();
-
-        // We keep the CategoryId so we know what category it belongs to, 
-        // but we do NOT include the actual Category object here.
         public int CategoryId { get; set; }
     }
 }

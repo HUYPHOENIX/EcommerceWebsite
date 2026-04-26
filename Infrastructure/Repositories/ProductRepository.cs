@@ -14,9 +14,20 @@ namespace Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Product>> GetAllAsync()
+        public async Task<(IEnumerable<Product> Items, int TotalCount)> GetProductsByPageAsync(int? CategoryId, int PageNumber, int PageSize)
         {
-            return await _context.Products.Include(p => p.Category).ToListAsync();
+            var query = _context.Products.AsQueryable();
+            if (CategoryId.HasValue && CategoryId.Value > 0)
+            {
+                query = query.Where(p => p.CategoryId == CategoryId.Value);
+            }
+            var totalItems = await query.CountAsync();
+            var items = await query
+                .Skip((PageNumber - 1) * PageSize)
+                .Take(PageSize)
+                .OrderBy(p => p.Id)
+                .ToListAsync();
+            return (items, totalItems);
         }
 
         public async Task<Product?> GetProductByID(int id)
@@ -44,6 +55,11 @@ namespace Infrastructure.Repositories
                 _context.Products.Remove(product);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<IEnumerable<Product>> GetAllAsync()
+        {
+            return await _context.Products.ToListAsync();
         }
     }
 }
