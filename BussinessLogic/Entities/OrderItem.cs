@@ -1,8 +1,11 @@
 
+using System.ComponentModel.DataAnnotations;
+
 namespace BussinessLogic.Entities;
 
 public class OrderItem
 {
+    [Key]
     public int Id { get; set; } 
     public int OrderId { get; set; } 
     public int ProductId { get; set; }

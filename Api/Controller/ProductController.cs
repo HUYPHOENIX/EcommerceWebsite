@@ -107,7 +107,5 @@ namespace Api.Controller
             productDto.Id = createdProduct.Id;
             return CreatedAtAction(nameof(GetProductByID), new { id = productDto.Id }, productDto);
         }
-
-
     }
 }
