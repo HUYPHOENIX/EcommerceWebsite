@@ -3,7 +3,7 @@ using BussinessLogic.Interfaces;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace EcommerceShop.Infrastructure.Repositories;
+namespace Infrastructure.Repositories;
 
 public class CategoryRepository : ICategoryRepository
 {

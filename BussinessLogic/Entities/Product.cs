@@ -15,9 +15,6 @@ public class Product
     public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedDate { get; set; } = DateTime.UtcNow;
 
-    // Foreign Key for Entity Framework
     public int CategoryId { get; set; }
-    
-    // Navigation property: A product belongs to one category
     public Category? Category { get; set; }
 }

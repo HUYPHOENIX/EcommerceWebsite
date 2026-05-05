@@ -10,4 +10,8 @@
     <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="10.0.6" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SharedViewModel\SharedViewModel.csproj" />
+  </ItemGroup>
+
 </Project>

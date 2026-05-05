@@ -1,7 +1,7 @@
 namespace SharedViewModel.DTOs;
 public class OrderResponseDto
 {
-    //This is for after we create a Order then we want to show it to view
+    // TODO: Notice: We will remove UserId in the future after we got a token
     public int OrderId { get; set; }
     public string UserId { get; set; } = string.Empty;
     public DateTime OrderDate { get; set; }

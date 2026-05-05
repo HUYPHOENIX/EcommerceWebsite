@@ -1,8 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Infrastructure.Data;
 using BussinessLogic.Interfaces;
-using EcommerceShop.Infrastructure.Repositories;
 using Infrastructure.Repositories;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using BussinessLogic.Entities;
+using Microsoft.AspNetCore.Identity;
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -19,7 +23,34 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<ICategoryRepository,CategoryRepository>();
 builder.Services.AddScoped<IProductRepository,ProductRepository>();
 builder.Services.AddScoped<IOrderRepository,OrderRepository>();
+builder.Services.AddScoped<IAuthRepository,AuthRepository>();
+builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
 
+//-- Jwt Authentication ---
+var jwtSetting = builder.Configuration.GetSection("Authorization");
+var key = Encoding.UTF8.GetBytes(jwtSetting["Key"]!);
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}
+).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSetting["Issuer"],
+        ValidAudience = jwtSetting["Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(key)
+    };
+});
+var testKey = builder.Configuration["Authorization:Key"];
+Console.WriteLine($"\n--- SECURITY CHECK ---");
+Console.WriteLine($"The loaded key is: {testKey}");
+Console.WriteLine($"----------------------\n");
 
 var app = builder.Build();
 
@@ -31,6 +62,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();

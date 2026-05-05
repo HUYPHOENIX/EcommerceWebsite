@@ -3,7 +3,7 @@ using SharedViewModel.DTOs;
 using BussinessLogic.Entities;
 using BussinessLogic.Interfaces;
 
-namespace Api.Controllers
+namespace Api.Controller
 {
 
     [Route("api/[controller]")]
