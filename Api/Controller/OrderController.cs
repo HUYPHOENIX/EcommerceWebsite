@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using SharedViewModel.DTOs;
 using BussinessLogic.Entities;
 using BussinessLogic.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Api.Controller
 {
@@ -17,13 +19,25 @@ namespace Api.Controller
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateOrder([FromBody] OrderRequestDto request)
         {
             if (request?.Items == null || !request.Items.Any())
-            { return BadRequest("Order is Empty or null"); }
+            { 
+                return BadRequest("Đơn hàng không có gì hết."); 
+            }
+            var clams = User.Claims.ToList();
+
+            var userId = User.FindFirst("sub")?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized("Không xác định được danh tính người dùng.");
+            }
+
             var newOrder = new Order
             {
-                UserId = request.UserId,
+                UserId = userId!,
                 OrderDate = DateTime.UtcNow,
                 TotalPrice = request.Items.Sum(x => x.Price * x.Quantity),
                 OrderItems = request.Items.Select(dto => new OrderItem
@@ -38,11 +52,12 @@ namespace Api.Controller
             };
 
             var createdOrderId = await _orderRepository.CreateOrderAsync(newOrder);
-            return Ok(new { OrderId = createdOrderId, Message = "Order created successfully." });
+            return Ok(new { OrderId = createdOrderId, Message = "Đơn hàng được tạo thành công." });
 
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetOrder(int id)
         {
             // FETCH: Get Entity from Infrastructure

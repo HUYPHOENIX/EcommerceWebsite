@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using SharedViewModel.DTOs;
 using CustomerSite.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace CustomerSite.Controllers;
 
+[Authorize]
 public class PaymentController : Controller
 {
     private readonly IOrderApiService _orderApiService;
@@ -15,6 +18,7 @@ public class PaymentController : Controller
         _cartService = cartService;
     }
 
+    [HttpGet]
     public IActionResult Index()
     {
         var Items = _cartService.GetCart();
@@ -25,10 +29,14 @@ public class PaymentController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> PlaceOrder()
     {
+        var accessToken = User.FindFirst("AccessToken")?.Value;
+        if(string.IsNullOrEmpty(accessToken))
+        {
+            return RedirectToAction("Login", "Auth");
+        }
         var cart = _cartService.GetCart();
         var orderRequest = new OrderRequestDto
-        {
-            UserId = "Guest_User", // Update this code after feature Authorize/Authentication are developed
+        { 
             Items = cart.Select(item => new OrderItemDto
             {
                 ProductId = item.ProductId,
@@ -40,17 +48,16 @@ public class PaymentController : Controller
             }).ToList()
         };
 
-        var newOrderId = await  _orderApiService.CreateOrderAsync(orderRequest);
+        var newOrderId = await  _orderApiService.CreateOrderAsync(orderRequest, accessToken!);
         if (newOrderId.HasValue)
         {
             _cartService.ClearCart();
             return RedirectToAction("Success", new { id = newOrderId.Value });
         }
-        ModelState.AddModelError("", "Unable to process payment. Please try again.");
+        ModelState.AddModelError("", "Không thanh toán được đơn hàng. Vui lòng thử lại.");
         return View("Index", cart);
-
-
     }
+    
     [HttpGet]
     public IActionResult Success(int id)
     {

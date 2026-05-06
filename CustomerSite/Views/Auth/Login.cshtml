@@ -8,8 +8,8 @@
     <div class="col-md-4">
         <h2 class="text-center">Đăng nhập</h2>
 
-        <form asp-action="Login" method="post" class="mt-4">
-            @Html.AntiForgeryToken();
+        <form asp-action="Login" method="post" asp-route-returnUrl="@ViewData["ReturnUrl"]" class="mt-4">
+            @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="mb-3">

@@ -40,6 +40,7 @@ namespace CustomerSite.Services
                     .AddCookie(options =>
                     {
                         options.Cookie.HttpOnly = true;
+                        options.LoginPath = "/Auth/Login";
                     });
             return services;
         }

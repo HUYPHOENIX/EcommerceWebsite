@@ -61,7 +61,7 @@
                         <strong class="text-primary fs-4">@total VND</strong>
                     </div>
 
-                    <form asp-action="PlaceOrder" method="post">
+                    <form asp-controller="Payment" asp-action="PlaceOrder" method="post">
                         @Html.AntiForgeryToken()
                         <button type="submit" class="btn btn-success btn-lg w-100 shadow">
                             Đặt hàng ngay !

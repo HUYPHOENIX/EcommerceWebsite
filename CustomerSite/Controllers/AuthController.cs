@@ -15,13 +15,14 @@ public class AuthController : Controller
         _accountService = accountService;
     }
     [HttpGet]
-    public IActionResult Login()
+    public IActionResult Login(string returnUrl)
     {
+        ViewData["ReturnUrl"] = returnUrl;
         return View();
     }
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Login(LoginRequestDto request)
+    public async Task<IActionResult> Login(LoginRequestDto request, string returnUrl = null!)
     {
         if (!ModelState.IsValid) return View(request);
 
@@ -32,23 +33,27 @@ public class AuthController : Controller
             var handler = new JwtSecurityTokenHandler();
             var jwtToken = handler.ReadJwtToken(result.AccessToken);
             var claims = jwtToken.Claims.ToList();
+            claims.Add(new Claim("AccessToken", result.AccessToken));
             var identity = new ClaimsIdentity(
                 claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var principal = new ClaimsPrincipal(identity);
             var authProperties = new AuthenticationProperties
             {
-                ExpiresUtc = jwtToken.ValidTo, 
-                IsPersistent = true    
+                ExpiresUtc = jwtToken.ValidTo,
+                IsPersistent = true
             };
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 principal, authProperties);
-            var Roles = claims.Where(c => c.Type == "role").Select(c => c.Value).ToList();
-            return Roles.Contains("Admin")
-                ? RedirectToAction("Index", "Admin")
-                : RedirectToAction("Index", "Home");
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return LocalRedirect(returnUrl);
+            }
+
+            return RedirectToAction("Index", "Home");
         }
         ModelState.AddModelError(string.Empty, "Email hoặc mật khẩu không đúng.");
+        ViewData["ReturnUrl"] = returnUrl;
         return View(request);
     }
     [HttpGet]

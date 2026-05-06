@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using CustomerSite.Interfaces;
 using SharedViewModel.DTOs;
 
@@ -12,8 +13,13 @@ public class OrderApiService: IOrderApiService
         _httpClient = httpClient;
     }
 
-    public async Task<int?> CreateOrderAsync(OrderRequestDto request)
+    public async Task<int?> CreateOrderAsync(OrderRequestDto request, string accessToken)
     {
+        if (!string.IsNullOrEmpty(accessToken))
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+        }
+
         var response = await _httpClient.PostAsJsonAsync("/api/order", request);
 
         if (response.IsSuccessStatusCode)

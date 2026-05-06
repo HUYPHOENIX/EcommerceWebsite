@@ -102,9 +102,9 @@ public class AuthRepository : IAuthRepository
         var roles = await _userManager.GetRolesAsync(user);
         var claims = new List<Claim>
         {
-        new Claim(JwtRegisteredClaimNames.Sub, user.Email!),
+        new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+        new Claim(JwtRegisteredClaimNames.Email, user.Email!),
         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-        new Claim(ClaimTypes.NameIdentifier, user.Id),
         new Claim(ClaimTypes.GivenName, user.FirstName)
         };
         foreach (var role in roles)
@@ -114,7 +114,7 @@ public class AuthRepository : IAuthRepository
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddMinutes(1),
+            Expires = DateTime.UtcNow.AddMinutes(30),
             Issuer = _configuration["Authorization:Issuer"],
             Audience = _configuration["Authorization:Audience"],
             SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256)

@@ -4,5 +4,5 @@ namespace CustomerSite.Interfaces;
 
 public interface IOrderApiService
 {
-    Task<int?> CreateOrderAsync(OrderRequestDto request);
+    Task<int?> CreateOrderAsync(OrderRequestDto request, string accessToken);
 }
