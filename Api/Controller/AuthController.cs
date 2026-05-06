@@ -16,21 +16,21 @@ namespace Api.Controller
             _authRepository = authRepository;
         }
 
-        [HttpPost("refresh")]
-        public async Task<IActionResult> RefreshToken([FromBody] TokenRequestDto request)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            var newTokenResponse = await _authRepository.RefreshTokenAsync(request);
-            if (!newTokenResponse.IsSuccess)
-            {
-                return Unauthorized(newTokenResponse);
-            }
-            return Ok(newTokenResponse);
-        }
-        
+        // [HttpPost("refresh")]
+        // public async Task<IActionResult> RefreshToken([FromBody] TokenRequestDto request)
+        // {
+        //     if (!ModelState.IsValid)
+        //     {
+        //         return BadRequest(ModelState);
+        //     }
+        //     var newTokenResponse = await _authRepository.RefreshTokenAsync(request);
+        //     if (!newTokenResponse.IsSuccess)
+        //     {
+        //         return Unauthorized(newTokenResponse);
+        //     }
+        //     return Ok(newTokenResponse);
+        // }
+
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
         {

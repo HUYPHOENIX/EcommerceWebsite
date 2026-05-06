@@ -1,0 +1,36 @@
+@model SharedViewModel.DTOs.LoginRequestDto
+@{
+    ViewData["Title"] = "Đăng nhập";
+    
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-4">
+        <h2 class="text-center">Đăng nhập</h2>
+
+        <form asp-action="Login" method="post" class="mt-4">
+            @Html.AntiForgeryToken();
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">Email</label>
+                <input asp-for="Email" class="form-control" placeholder="nhap email cua ban" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label">Mật khẩu</label>
+                <input asp-for="Password" type="password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            @* <input type="text" class="form-control" value="@Html.Raw(Model?.Password)" name="Password" /> *@
+
+            <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
+        </form>
+        
+        <div class="mt-3 text-center">
+            <p>Chưa có tài khoản? <a asp-action="Register">Đăng ký ngay</a></p>
+        </div>
+    </div>
+</div>

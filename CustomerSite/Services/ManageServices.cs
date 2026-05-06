@@ -1,8 +1,10 @@
 using CustomerSite.Interfaces;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CustomerSite.Services
 {
-    public static class RegisterService
+    public static class ManageService
     {
         public static IServiceCollection AddApiService(this IServiceCollection services, IConfiguration config)
         {
@@ -14,7 +16,7 @@ namespace CustomerSite.Services
             };
             services.AddHttpClient<IProductApiService, ProductApiService>(configureClient);
             services.AddHttpClient<IOrderApiService, OrderApiService>(configureClient);
-
+            services.AddHttpClient<IAccountService, AccountService>(configureClient);
             return services;
         }
 
@@ -28,7 +30,17 @@ namespace CustomerSite.Services
                         options.Cookie.IsEssential = true;
                     })
                     .AddHttpContextAccessor()
-                    .AddScoped<ICartService, CartService>();
+                    .AddScoped<ICartService, CartService>();                   
+            return services;
+        }
+        [HttpPost]
+        public static IServiceCollection AddAuthenticationService(this IServiceCollection services)
+        {
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                    .AddCookie(options =>
+                    {
+                        options.Cookie.HttpOnly = true;
+                    });
             return services;
         }
     }

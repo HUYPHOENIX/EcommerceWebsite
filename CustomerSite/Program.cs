@@ -1,4 +1,3 @@
-using CustomerSite.Interfaces;
 using CustomerSite.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,7 +8,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddApiService(builder.Configuration);
 //-- Session --//
 builder.Services.AddSessionService();
-
+//-- Authentication --//
+builder.Services.AddAuthenticationService();
 
 
 var app = builder.Build();
@@ -26,6 +26,7 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseSession();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
