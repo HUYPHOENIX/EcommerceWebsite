@@ -95,7 +95,6 @@ public class AuthRepository : IAuthRepository
     //Stateless + Stateful
     private async Task<string> GenerateAccessTokenAsync(User user)
     {
-        // This SecurityTokenDescriptor is created just to write the code more clean, don't need to create many constructors for the token.
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Authorization:Key"]!));
         var roles = await _userManager.GetRolesAsync(user);
         var claims = new List<Claim>
@@ -112,7 +111,7 @@ public class AuthRepository : IAuthRepository
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddMinutes(1),
+            Expires = DateTime.UtcNow.AddMinutes(2),
             Issuer = _configuration["Authorization:Issuer"],
             Audience = _configuration["Authorization:Audience"],
             SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256)

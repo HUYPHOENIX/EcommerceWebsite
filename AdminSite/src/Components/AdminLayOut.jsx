@@ -5,7 +5,7 @@ const AdminLayout = () => {
     const navigate = useNavigate();
     const handleLogout = () => {
         logout();
-       navigate("/login", {replace:true})
+        navigate("/login")
     }
     return (
         <div>

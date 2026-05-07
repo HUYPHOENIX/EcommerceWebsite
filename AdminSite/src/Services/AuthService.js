@@ -1,5 +1,5 @@
 import axios from 'axios';
-// import { isTokenExpired } from "../Utils/TokenUtils";
+import {jwtDecode} from 'jwt-decode'
 
 
 const API_URL = 'http://localhost:5007/api/Auth';
@@ -43,13 +43,31 @@ export const getToken = () => {
     return localStorage.getItem("accessToken");
 };
 
-// we need a function to check the token
+export const isTokenExpired = (token, bufferTime = 60) => {
+    try {
+        if (!token) return true;
+        const decodedToken = jwtDecode(token);
+        if (!decodedToken.exp) return true;
+        const currentTime = Date.now() / 1000;
+        const expirationWithBuffer = decodedToken.exp - bufferTime;
+        console.log('Token exp:', new Date(decodedToken.exp * 1000));
+        console.log('Current time:', new Date(currentTime * 1000));
+        console.log('Expired?', expirationWithBuffer < currentTime);
+        return expirationWithBuffer < currentTime;
+
+    } catch (error) {
+        console.error('Invalid token:', error);
+        return true;
+    }
+};
 
 export const isAuthenticated = () => {
     const token = getToken();
-
     if (!token) return false;
 
+    if (isTokenExpired(token)) {
+        logout(); 
+        return false;
+    }
     return true;
-    // return !isTokenExpired(token);
 };
