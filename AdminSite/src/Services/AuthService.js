@@ -43,10 +43,13 @@ export const getToken = () => {
     return localStorage.getItem("accessToken");
 };
 
-// export const isAuthenticated = () => {
-//     const token = getToken();
+// we need a function to check the token
 
-//     if (!token) return false;
+export const isAuthenticated = () => {
+    const token = getToken();
 
-//     return !isTokenExpired(token);
-// };
+    if (!token) return false;
+
+    return true;
+    // return !isTokenExpired(token);
+};

@@ -1,24 +1,24 @@
 
-import { Link, Outlet , useNavigate } from 'react-router-dom';
+import { Link, Outlet ,useNavigate} from 'react-router-dom';
 import {logout} from '../services/authService';
 const AdminLayout = () => {
     const navigate = useNavigate();
     const handleLogout = () => {
         logout();
-        navigate('/login');
+       navigate("/login", {replace:true})
     }
     return (
         <div>
             <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
                 <div className="container-fluid">
-                    <Link className="navbar-brand" to="/">Admin</Link>
+                    <Link className="navbar-brand" to="/admin">Admin</Link>
                     <div className="collapse navbar-collapse">
                         <ul className="navbar-nav me-auto">
                             <li className="nav-item">
-                                <Link className="nav-link" to="/categories">Categories</Link>
+                                <Link className="nav-link" to="/admin/categories">Categories</Link>
                             </li>
                             <li className="nav-item">
-                                <Link className="nav-link" to="/products">Products</Link>
+                                <Link className="nav-link" to="/admin/products">Products</Link>
                             </li>
                         </ul>
                         <button className="btn btn-outline-light btn-sm" onClick={handleLogout}>

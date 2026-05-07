@@ -1,6 +1,6 @@
-import { useState } from "react";
+import {  useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { login} from "../services/authService";
+import { login } from "../services/authService";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -14,12 +14,11 @@ const Login = () => {
     const result = await login(email, password);
 
     if (result.success) {
-      navigate("/");
+      navigate("/admin", { replace: true });
     } else {
       setError(result.error);
     }
   };
-  
   return (
     <div className="container mt-5">
       <div className="row justify-content-center">
