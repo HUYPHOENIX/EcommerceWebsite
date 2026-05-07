@@ -37,10 +37,9 @@ public class AuthRepository : IAuthRepository
             return new AuthResponseDto
             {
                 IsSuccess = false,
-                Message = "Mật khẩu hoặc email không đúng."
             };
         }
-        // var roles = await _userManager.GetRolesAsync(user);
+        var roles = await _userManager.GetRolesAsync(user);
 
         // var refreshTokenString = GenerateRefreshToken();
 
@@ -59,8 +58,8 @@ public class AuthRepository : IAuthRepository
         return new AuthResponseDto
         {
             IsSuccess = true,
-            Message = "Đăng nhập thành công!",
             AccessToken = AccessTokenGen,
+            Roles = roles.ToList()
         };
     }
     public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto request)
@@ -71,7 +70,6 @@ public class AuthRepository : IAuthRepository
             return new AuthResponseDto
             {
                 IsSuccess = false,
-                Message = "Email đã được đăng ký."
             };
         }
 
@@ -87,12 +85,12 @@ public class AuthRepository : IAuthRepository
 
         if (!result.Succeeded)
         {
-            return new AuthResponseDto { IsSuccess = false, Message = string.Join(", ", result.Errors.Select(e => e.Description)) };
+            return new AuthResponseDto {IsSuccess = false};
         }
 
         await _userManager.AddToRoleAsync(user, "Customer");
 
-        return new AuthResponseDto { IsSuccess = true, Message = "Đăng ký thành công!" };
+        return new AuthResponseDto { IsSuccess = true};
     }
     //Stateless + Stateful
     private async Task<string> GenerateAccessTokenAsync(User user)
@@ -114,7 +112,7 @@ public class AuthRepository : IAuthRepository
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddMinutes(30),
+            Expires = DateTime.UtcNow.AddMinutes(1),
             Issuer = _configuration["Authorization:Issuer"],
             Audience = _configuration["Authorization:Audience"],
             SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256)

@@ -1,6 +1,7 @@
+using BussinessLogic.Entities;
 using BussinessLogic.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SharedViewModel.DTOs;
 
 namespace Api.Controller
@@ -10,10 +11,11 @@ namespace Api.Controller
     public class AuthController : ControllerBase
     {
         private readonly IAuthRepository _authRepository;
-
-        public AuthController(IAuthRepository authRepository)
+        private readonly UserManager<User> _userManager;
+        public AuthController(IAuthRepository authRepository, UserManager<User> userManager)
         {
             _authRepository = authRepository;
+            _userManager = userManager;
         }
 
         // [HttpPost("refresh")]
@@ -30,6 +32,21 @@ namespace Api.Controller
         //     }
         //     return Ok(newTokenResponse);
         // }
+
+        [HttpPost("admin-login")]
+        public async Task<IActionResult> AdminLogin([FromBody] LoginRequestDto request)
+        {
+            var response = await _authRepository.LoginAsync(request);
+            if (response.IsSuccess == false)
+            {
+                return Unauthorized(response.IsSuccess);
+            }
+            if(response.Roles == null || !response.Roles.Contains("Admin"))
+            {
+                return Forbid();
+            }
+            return Ok(response);
+        }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)

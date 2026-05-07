@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using BussinessLogic.Entities;
 using Microsoft.AspNetCore.Identity;
+using System.Text.Json;
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -52,16 +53,36 @@ Console.WriteLine($"\n--- SECURITY CHECK ---");
 Console.WriteLine($"The loaded key is: {testKey}");
 Console.WriteLine($"----------------------\n");
 
-var app = builder.Build();
+// --- CORS Policy ---
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+// --- JSON Serializer Options ---
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    });
 
+
+
+var app = builder.Build();
+app.UseRouting();
+app.UseCors("AllowReactApp");
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 app.UseHttpsRedirection();
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
