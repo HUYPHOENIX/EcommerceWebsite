@@ -1,163 +1,67 @@
-
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 using BussinessLogic.Entities;
-using BussinessLogic.Interfaces;
-using Infrastructure.Data;
+using BussinessLogic.IRepository;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using SharedViewModel.DTOs;
 
-namespace Infrastructure.Repositories;
-
-public class AuthRepository : IAuthRepository
+namespace Infrastructure.Repositories
 {
-    private readonly UserManager<User> _userManager;
-    private readonly IConfiguration _configuration;
-    private readonly AppDbContext _context;
-
-    public AuthRepository(UserManager<User> userManager, IConfiguration configuration, AppDbContext context)
+    public class AuthRepository : IAuthRepository
     {
-        _userManager = userManager;
-        _configuration = configuration;
-        _context = context;
-    }
+        private readonly UserManager<User> _userManager;
 
-    public async Task<AuthResponseDto> LoginAsync(LoginRequestDto request)
-    {
-        var user = await _userManager.FindByEmailAsync(request.Email);
-
-        if (user == null || !await _userManager.CheckPasswordAsync(user, request.Password))
+        public AuthRepository(UserManager<User> userManager)
         {
+            _userManager = userManager;
+        }
 
-            return new AuthResponseDto
+        public async Task<User> FindByEmailAsync(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                throw new ArgumentException("Email không được trống");
+            
+            return await _userManager.FindByEmailAsync(email);
+        }
+
+        public async Task<User> CreateUserAsync(User user, string password)
+        {
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+
+            var result = await _userManager.CreateAsync(user, password);
+            
+            if (!result.Succeeded)
             {
-                IsSuccess = false,
-            };
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                throw new InvalidOperationException($"Tạo user bị lỗi: {errors}");
+            }
+
+            return user;
         }
-        var roles = await _userManager.GetRolesAsync(user);
 
-        // var refreshTokenString = GenerateRefreshToken();
-
-        // var refreshToken = new RefreshToken
-        // {
-        //     Token = refreshTokenString,
-        //     Expires = DateTime.UtcNow.AddDays(7),
-        //     UserId = user.Id,
-        //     IsRevoked = false,
-        // };
-
-        // _context.RefreshTokens.Add(refreshToken);
-        // await _context.SaveChangesAsync();
-
-        var AccessTokenGen = await GenerateAccessTokenAsync(user);
-        return new AuthResponseDto
+        public async Task<bool> ValidatePasswordAsync(User user, string password)
         {
-            IsSuccess = true,
-            AccessToken = AccessTokenGen,
-            Roles = roles.ToList()
-        };
+            if (user == null || string.IsNullOrWhiteSpace(password))
+                return false;
+
+            return await _userManager.CheckPasswordAsync(user, password);
+        }
+
+        public async Task AddToRoleAsync(User user, string role)
+        {
+            if (user == null || string.IsNullOrWhiteSpace(role))
+                throw new ArgumentException("Không có user hoặc role không đúng.");
+
+            var result = await _userManager.AddToRoleAsync(user, role);
+            
+            if (!result.Succeeded)
+                throw new InvalidOperationException($"Không thể add role: {role}");
+        }
+
+        public async Task<IList<string>> GetRolesAsync(User user)
+        {
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+
+            return await _userManager.GetRolesAsync(user);
+        }
     }
-    public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto request)
-    {
-        var existingUser = await _userManager.FindByEmailAsync(request.Email);
-        if (existingUser != null)
-        {
-            return new AuthResponseDto
-            {
-                IsSuccess = false,
-            };
-        }
-
-        var user = new User
-        {
-            UserName = request.Email,
-            Email = request.Email,
-            FirstName = request.FirstName,
-            LastName = request.LastName
-        };
-
-        var result = await _userManager.CreateAsync(user, request.Password);
-
-        if (!result.Succeeded)
-        {
-            return new AuthResponseDto {IsSuccess = false};
-        }
-
-        await _userManager.AddToRoleAsync(user, "Customer");
-
-        return new AuthResponseDto { IsSuccess = true};
-    }
-    //Stateless + Stateful
-    private async Task<string> GenerateAccessTokenAsync(User user)
-    {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Authorization:Key"]!));
-        var roles = await _userManager.GetRolesAsync(user);
-        var claims = new List<Claim>
-        {
-        new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-        new Claim(JwtRegisteredClaimNames.Email, user.Email!),
-        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-        new Claim(ClaimTypes.GivenName, user.FirstName)
-        };
-        foreach (var role in roles)
-        {
-            claims.Add(new Claim(ClaimTypes.Role, role));
-        }
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddMinutes(2),
-            Issuer = _configuration["Authorization:Issuer"],
-            Audience = _configuration["Authorization:Audience"],
-            SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
-        };
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-        return tokenHandler.WriteToken(token);
-    }
-    // public async Task<AuthResponseDto> RefreshTokenAsync(AuthResponseDto request)
-    // {
-    //     var existingToken = await _context.RefreshTokens.FirstOrDefaultAsync(t => t.Token == request.RefreshToken);
-    //     if (existingToken == null || existingToken.IsRevoked == true || existingToken.Expires < DateTime.UtcNow)
-    //     {
-    //         return new AuthResponseDto
-    //         {
-    //             IsSuccess = false,
-    //             Message = "Token không hợp lệ hoặc đã hết hạn"
-    //         };
-    //     }
-    //     var user = await _userManager.FindByIdAsync(existingToken.UserId);
-    //     var newAccessToken = await GenerateAccessTokenAsync(user!);
-    //     var newRefreshTokenString = GenerateRefreshToken();
-    //     existingToken.IsRevoked = true;
-    //     var newRefreshToken = new RefreshToken
-    //     {
-    //         Token = newRefreshTokenString,
-    //         Expires = DateTime.UtcNow.AddDays(7),
-    //         UserId = user!.Id,
-    //         IsRevoked = false
-    //     };
-    //     _context.RefreshTokens.Add(newRefreshToken);
-    //     await _context.SaveChangesAsync();
-    //     return new AuthResponseDto
-    //     {
-    //         IsSuccess = true,
-    //         Message = "Token đã được làm mới",
-    //         AccessToken = newAccessToken,
-    //         RefreshToken = newRefreshTokenString
-    //     };
-    // }
-    // // Helper
-    // private string GenerateRefreshToken()
-    // {
-    //     var randomNumber = new Byte[32];
-    //     using var rng = RandomNumberGenerator.Create();
-    //     rng.GetBytes(randomNumber);
-    //     return Convert.ToBase64String(randomNumber);
-    // }
 }

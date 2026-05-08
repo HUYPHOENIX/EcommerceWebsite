@@ -1,57 +1,107 @@
-using BussinessLogic.Interfaces;
-using BussinessLogic.Entities;
-using SharedViewModel.DTOs;
-using Microsoft.AspNetCore.Mvc;
+// using BussinessLogic.IRepository;
+// using BussinessLogic.Entities;
+// using SharedViewModel.DTOs;
+// using Microsoft.AspNetCore.Mvc;
+// using Microsoft.AspNetCore.Authorization;
+// using System.Text.RegularExpressions;
 
-namespace Api.Controller
-{
-    [Route("api/[controller]")]
-    [ApiController]
-    public class CategoriesController : ControllerBase
-    {
-        private readonly ICategoryRepository _categoryRepository;
-        // Dependency Injection hands us the worker we registered in Program.cs!
-        public CategoriesController(ICategoryRepository categoryRepository)
-        {
-            _categoryRepository = categoryRepository;
-        }
+// namespace Api.Controller
+// {
+//     [Route("api/[controller]")]
+//     [ApiController]
+//     public class CategoriesController : ControllerBase
+//     {
+//         private readonly ICategoryRepository _categoryRepository;
+//         // Dependency Injection hands us the worker we registered in Program.cs!
+//         public CategoriesController(ICategoryRepository categoryRepository)
+//         {
+//             _categoryRepository = categoryRepository;
+//         }
 
-        //Get: api/categories
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<CategoryDto>>> GetCategories()
-        {
+//         //Get: api/categories
+//         [HttpGet("GetCategories")]
+//         public async Task<ActionResult<IEnumerable<CategoryDto>>> GetCategories()
+//         {
+//             try
+//             {
+//                 var categories = await _categoryRepository.GetAllCategories();
+//                 return Ok(categories);
+//             }
+//             catch (Exception ex)
+//             {
+//                 return StatusCode(500, new { message = "Error fetching categories", error = ex.Message });
+//             }
+//         }
 
-            var categories = await _categoryRepository.GetAllAsync();
-            // Map the entities to DTOs
-            var categoryDtos = categories.Select(c => new CategoryDto
-            {
-                Id = c.Id,
-                Name = c.Name,
-                Description = c.Description
-            });
-            return Ok(categoryDtos);
-        }
+//         [HttpPost("CreateCategory")]
+//         [Authorize(Roles = "Admin")]
+//         public async Task<IActionResult> CreateCategory([FromBody] CategoryDto request)
+//         {
 
-        //POST : api/categories
-        [HttpPost]
-        public async Task<ActionResult<CategoryDto>> CreateCategory(CategoryDto categoryDto)
-        {
-            // 1. Map the incoming DTO into a real Entity for the database
-            var newCategory = new Category
-            {
-                Name = categoryDto.Name,
-                Description = categoryDto.Description
-            };
+//             if (string.IsNullOrWhiteSpace(request.Name))
+//                 return BadRequest("Category ít nhất phải có tên");
+//             if (string.IsNullOrWhiteSpace(request.Name))
+//             {
+//                 return BadRequest(new
+//                 {
+//                     success = false,
+//                     message = "Tên danh mục không được để trống."
+//                 });
+//             }
+//             string pattern = @"^(?=.*[a-zA-ZÀ-ỹ])[a-zA-ZÀ-ỹ0-9 ]+$";
+//             if (!Regex.IsMatch(request.Name, pattern))
+//             {
+//                 return BadRequest(new
+//                 {
+//                     success = false,
+//                     message = "Tên danh mục không hợp lệ! Không được chứa ký tự đặc biệt và phải có ít nhất một chữ cái."
+//                 });
+//             }
+//             try
+//             {
+//                 var result = await _categoryRepository.AddCategory(request);
+//                 return Ok(result);
+//             }
+//             catch (Exception ex)
+//             {
+//                 return StatusCode(500, new { message = "Lỗi khởi tạo", error = ex.Message });
+//             }
 
-            // 2. Ask the worker to save it
-            var createdCategory = await _categoryRepository.AddAsync(newCategory);
+//         }
 
-            // 3. Attach the brand-new database ID to the DTO to send back to the user
-            categoryDto.Id = createdCategory.Id;
+//         // [HttpPut("{id}")]
+//         // [Authorize(Roles = "Admin")] // <--- Locks down PUT
+//         // public async Task<IActionResult> UpdateCategory(int id, [FromBody] CategoryDto request)
+//         // {
+//         //     if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            // 4. Return a 201 Created status
-            return CreatedAtAction(nameof(GetCategories), new { id = categoryDto.Id }, categoryDto);
-        }
+//         //     var response = await _categoryRepository.UpdateAsync(id, request);
+//         //     if (!response.IsSuccess)
+//         //     {
+//         //         return BadRequest(response);
+//         //     }
 
-    }
-}
+//         //     return Ok(response);
+//         // }
+
+//         [HttpDelete("DeleteCategory/{id}")]
+//         [Authorize(Roles = "Admin")]
+//         public async Task<IActionResult> DeleteCategory(int id)
+//         {
+//             try
+//             {
+//                 await _categoryRepository.DeleteCategory(id);
+//                 return NoContent();
+//             }
+//             catch (KeyNotFoundException)
+//             {
+//                 return NotFound(new { message = "Không có bất kỳ category nào như trên." });
+//             }
+//             catch (Exception ex)
+//             {
+//                 return StatusCode(500, new { message = "Lỗi xóa bỏ.", error = ex.Message });
+//             }
+//         }
+
+//     }
+// }

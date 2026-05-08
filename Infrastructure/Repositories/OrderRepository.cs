@@ -1,7 +1,6 @@
 using BussinessLogic.Entities;
-using BussinessLogic.Interfaces;
+using BussinessLogic.IRepository;
 using Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
@@ -13,17 +12,12 @@ public class OrderRepository : IOrderRepository
         _Context = context;
     }
 
-    public async Task<int> CreateOrderAsync(Order order)
+
+    public async Task<Order> CreateOrderAsync(Order order)
     {
         _Context.Orders.Add(order);
         await _Context.SaveChangesAsync();
 
-        return order.Id;
-    }
-
-    public async Task<Order?> GetOrderByIdAsync(int id)
-    {
-        return await _Context.Orders
-        .Include(ListItem => ListItem.OrderItems).FirstOrDefaultAsync(ListItem => ListItem.Id == id);
+        return order;
     }
 }

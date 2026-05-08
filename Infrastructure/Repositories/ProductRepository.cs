@@ -1,5 +1,5 @@
 using BussinessLogic.Entities;
-using BussinessLogic.Interfaces;
+using BussinessLogic.IRepository;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -60,6 +60,11 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<Product>> GetAllAsync()
         {
             return await _context.Products.ToListAsync();
+        }
+
+        public async Task<List<Product>> GetProductsByID(List<int> ids)
+        {
+            return await _context.Products.Where(p => ids.Contains(p.Id)).ToListAsync();
         }
     }
 }

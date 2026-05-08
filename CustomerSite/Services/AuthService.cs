@@ -3,13 +3,14 @@ using SharedViewModel.DTOs;
 
 namespace CustomerSite.Services;
 
-public class AccountService : IAccountService
+public class AuthService : IAuthService
 {
     private readonly HttpClient _httpClient;
-
-    public AccountService(HttpClient httpClient)
+    private readonly ILogger<AuthService> _logger;
+    public AuthService(HttpClient httpClient, ILogger<AuthService> logger)
     {
         _httpClient = httpClient;
+        _logger = logger;
     }
     public async Task<AuthResponseDto> LoginAsync(LoginRequestDto request)
     {

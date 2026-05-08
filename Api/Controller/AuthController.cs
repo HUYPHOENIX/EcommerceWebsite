@@ -1,76 +1,62 @@
-using BussinessLogic.Entities;
-using BussinessLogic.Interfaces;
-using Microsoft.AspNetCore.Identity;
+using BussinessLogic.Services;
 using Microsoft.AspNetCore.Mvc;
 using SharedViewModel.DTOs;
 
-namespace Api.Controller
+namespace Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IAuthRepository _authRepository;
-        private readonly UserManager<User> _userManager;
-        public AuthController(IAuthRepository authRepository, UserManager<User> userManager)
-        {
-            _authRepository = authRepository;
-            _userManager = userManager;
-        }
+        private readonly IAuthService _authService;
 
-        // [HttpPost("refresh")]
-        // public async Task<IActionResult> RefreshToken([FromBody] TokenRequestDto request)
-        // {
-        //     if (!ModelState.IsValid)
-        //     {
-        //         return BadRequest(ModelState);
-        //     }
-        //     var newTokenResponse = await _authRepository.RefreshTokenAsync(request);
-        //     if (!newTokenResponse.IsSuccess)
-        //     {
-        //         return Unauthorized(newTokenResponse);
-        //     }
-        //     return Ok(newTokenResponse);
-        // }
-
-        [HttpPost("admin-login")]
-        public async Task<IActionResult> AdminLogin([FromBody] LoginRequestDto request)
+        public AuthController(
+            IAuthService authService)
         {
-            var response = await _authRepository.LoginAsync(request);
-            if (response.IsSuccess == false)
-            {
-                return Unauthorized(response.IsSuccess);
-            }
-            if(response.Roles == null || !response.Roles.Contains("Admin"))
-            {
-                return Forbid();
-            }
-            return Ok(response);
+            _authService = authService;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
         {
-            var response = await _authRepository.RegisterAsync(request);
-            if (!response.IsSuccess)
-            {
-                return BadRequest(response);
-            }
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            return Ok(response);
+            var result = await _authService.RegisterAsync(request);
+
+            if (!result.IsSuccess)
+                return BadRequest(new { result.Message });
+
+            return StatusCode(201, result);
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
         {
-            var response = await _authRepository.LoginAsync(request);
-            if (!response.IsSuccess)
-            {
-                return Unauthorized(response);
-            }
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            return Ok(response);
+            var result = await _authService.LoginCustomerAsync(request);
+
+            if (!result.IsSuccess)
+                return Unauthorized(new { message = result.Message });
+
+            return Ok(result);
+
+        }
+
+        [HttpPost("admin-login")]
+        public async Task<IActionResult> AdminLogin([FromBody] LoginRequestDto request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var result = await _authService.LoginAdminAsync(request);
+
+            if (!result.IsSuccess)
+                return Unauthorized(new { message = result.Message });
+
+            return Ok(result);
         }
     }
 }
-

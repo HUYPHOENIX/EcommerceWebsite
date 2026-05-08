@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Infrastructure.Data;
-using BussinessLogic.Interfaces;
+using BussinessLogic.IRepository;
 using Infrastructure.Repositories;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using BussinessLogic.Entities;
 using Microsoft.AspNetCore.Identity;
 using System.Text.Json;
+using BussinessLogic.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -21,11 +22,15 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // --- Add service to Using AddScoped ---
+builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IOrderService,OrderService>();
+// --- Add repository ---
 builder.Services.AddScoped<ICategoryRepository,CategoryRepository>();
 builder.Services.AddScoped<IProductRepository,ProductRepository>();
 builder.Services.AddScoped<IOrderRepository,OrderRepository>();
-builder.Services.AddScoped<IAuthRepository,AuthRepository>();
-builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
+builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 
 //-- Jwt Authentication ---
 var jwtSetting = builder.Configuration.GetSection("Authorization");
