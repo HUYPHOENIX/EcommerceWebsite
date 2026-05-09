@@ -5,10 +5,10 @@ namespace BussinessLogic.IRepository
 {
     public interface ICategoryRepository
     {
-        Task<IEnumerable<CategoryDto>> GetAllCategories();
-        Task<CategoryDto> GetCategorybyID(int id);
-        Task<CategoryDto> AddCategory(CategoryDto categoryDto);
-        Task UpdateCategory(CategoryDto categoryDto);
-        Task DeleteCategory(int id); 
+        Task<IEnumerable<Category>> GetAllCategories();
+        Task<Category> GetCategorybyID(int id);
+        Task<Category> AddCategory(Category category);
+        Task<Category> UpdateCategory(Category category);
+        Task DeleteCategory(Category category); 
     }
 }

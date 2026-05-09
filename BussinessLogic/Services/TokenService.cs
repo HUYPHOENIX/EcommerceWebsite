@@ -5,16 +5,13 @@ using BussinessLogic.Entities;
 using BussinessLogic.IRepository;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-
-namespace BussinessLogic.Services
+namespace BussinessLogic.Services;
+public interface ITokenService
 {
-    public interface ITokenService
-    {
-        Task<string> GenerateAccessTokenAsync(User user);
-        // Future: Task<string> GenerateRefreshTokenAsync(User user);
-    }
+    Task<string> GenerateAccessTokenAsync(User user);
+}
 
-    public class TokenService : ITokenService
+public class TokenService : ITokenService
     {
         private readonly IConfiguration _configuration;
         private readonly IAuthRepository _authRepository;
@@ -62,4 +59,3 @@ namespace BussinessLogic.Services
             return await Task.FromResult(tokenHandler.WriteToken(token));
         }
     }
-}

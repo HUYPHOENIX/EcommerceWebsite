@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using SharedViewModel.DTOs;
 using CustomerSite.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
 
 namespace CustomerSite.Controllers;
 
@@ -40,8 +39,6 @@ public class PaymentController : Controller
             Items = cart.Select(item => new OrderItemDto
             {
                 ProductId = item.ProductId,
-                ProductName = item.ProductName,
-                Price = item.Price,
                 Quantity = item.Quantity,
                 Size = item.Size!,
                 Color = item.Color!

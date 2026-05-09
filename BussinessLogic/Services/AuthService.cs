@@ -15,10 +15,10 @@ namespace BussinessLogic.Services
     {
         private readonly IAuthRepository _authRepository;
         private readonly ITokenService _tokenService;
-        public AuthService(IAuthRepository authRepository, ITokenService tokenService)
+        public AuthService(IAuthRepository authRepository, ITokenService tokenRepository)
         {
             _authRepository = authRepository;
-            _tokenService = tokenService;
+            _tokenService = tokenRepository;
         }
 
         public async Task<AuthResponseDto> LoginAsync(

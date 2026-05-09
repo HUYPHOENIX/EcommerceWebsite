@@ -3,7 +3,6 @@ using BussinessLogic.Entities;
 using BussinessLogic.IRepository;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using SharedViewModel.DTOs;
 
 namespace Infrastructure.Repositories;
 
@@ -16,54 +15,34 @@ public class CategoryRepository : ICategoryRepository
         _context = context;
     }
 
-    public async Task<CategoryDto> AddCategory(CategoryDto categoryDto)
+    public async Task<IEnumerable<Category>> GetAllCategories()
     {
-        var category = new Category
-        {
-            Name = categoryDto.Name,
-            Description = categoryDto.Description
-        };
-        await _context.Categories.AddAsync(category);
+        return await _context.Categories.ToListAsync();
+    }
+
+    public async Task<Category> AddCategory(Category category)
+    {
+        _context.Categories.Add(category);
         await _context.SaveChangesAsync();
-        return new CategoryDto
-        {
-            Id = category.Id,
-            Name = category.Name,
-            Description = category.Description
-        };
+        return category;
     }
 
-    public async Task UpdateCategory(CategoryDto category)
+    public async Task<Category> UpdateCategory(Category category)
     {
-        throw new NotImplementedException();
+        _context.Categories.Update(category);
+        await _context.SaveChangesAsync();
+        return category;
+
     }
 
-    public async Task DeleteCategory(int id)
+    public async Task<Category> GetCategorybyID(int id)
     {
-        var category = await _context.Categories.FindAsync(id);
-        
-        if (category == null)
-            throw new KeyNotFoundException();
+        return await _context.Categories.FindAsync(id);
+    }
 
+    public async Task DeleteCategory(Category category)
+    {
         _context.Categories.Remove(category);
         await _context.SaveChangesAsync();
-    }
-
-    public async Task<IEnumerable<CategoryDto>> GetAllCategories()
-    {
-        var categories = await _context.Categories.ToListAsync();
-
-        return categories.Select(c => new CategoryDto
-        {
-            Id = c.Id,
-            Name = c.Name,
-            Description = c.Description
-        }).ToList();
-
-    }
-
-    public async Task<CategoryDto> GetCategorybyID(int id)
-    {
-        throw new NotImplementedException();
     }
 }

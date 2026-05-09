@@ -9,10 +9,10 @@ namespace CustomerSite.Controllers;
 
 public class AuthController : Controller
 {
-    private readonly IAccountService _accountService;
-    public AuthController(IAccountService accountService)
+    private readonly IAuthService _authService;
+    public AuthController(IAuthService accountService)
     {
-        _accountService = accountService;
+        _authService = accountService;
     }
     [HttpGet]
     public IActionResult Login(string returnUrl)
@@ -26,7 +26,7 @@ public class AuthController : Controller
     {
         if (!ModelState.IsValid) return View(request);
 
-        var result = await _accountService.LoginAsync(request);
+        var result = await _authService.LoginAsync(request);
 
         if (result != null && result.IsSuccess)
         {
@@ -66,7 +66,7 @@ public class AuthController : Controller
     public async Task<IActionResult> Register(RegisterRequestDto request)
     {
         if (!ModelState.IsValid) return View(request);
-        var result = await _accountService.RegisterAsync(request);
+        var result = await _authService.RegisterAsync(request);
         if (result != null)
         {
             return RedirectToAction("Index", "Home");

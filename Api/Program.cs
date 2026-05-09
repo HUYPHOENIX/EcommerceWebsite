@@ -24,8 +24,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // --- Add service to Using AddScoped ---
 builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IOrderService,OrderService>();
+builder.Services.AddScoped<ITokenService,TokenService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 // --- Add repository ---
 builder.Services.AddScoped<ICategoryRepository,CategoryRepository>();
 builder.Services.AddScoped<IProductRepository,ProductRepository>();
@@ -54,6 +55,8 @@ builder.Services.AddAuthentication(options =>
         ClockSkew = TimeSpan.FromMinutes(5)
     };
 });
+
+
 var testKey = builder.Configuration["Authorization:Key"];
 Console.WriteLine($"\n--- SECURITY CHECK ---");
 Console.WriteLine($"The loaded key is: {testKey}");

@@ -9,5 +9,6 @@ namespace BussinessLogic.IRepository
         Task<bool> ValidatePasswordAsync(User user, string password);
         Task AddToRoleAsync(User user, string role);
         Task<IList<string>> GetRolesAsync(User user);
+        
     }
 }
