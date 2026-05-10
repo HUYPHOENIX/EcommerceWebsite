@@ -29,7 +29,7 @@ public class CategoryRepository : ICategoryRepository
 
     public async Task<Category> UpdateCategory(Category category)
     {
-        _context.Categories.Update(category);
+        _context.Entry(category).State = EntityState.Modified;
         await _context.SaveChangesAsync();
         return category;
 

@@ -26,6 +26,7 @@ builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<AppD
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IOrderService,OrderService>();
 builder.Services.AddScoped<ITokenService,TokenService>();
+builder.Services.AddScoped<IProductService,ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 // --- Add repository ---
 builder.Services.AddScoped<ICategoryRepository,CategoryRepository>();

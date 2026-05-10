@@ -1,7 +1,7 @@
-using BussinessLogic.Entities;
-using BussinessLogic.IRepository;
-using SharedViewModel.DTOs;
 
+using BussinessLogic.IRepository;
+using BusinessLogic.Mapper;
+using SharedViewModel.DTOs;
 namespace BussinessLogic.Services
 {
     public interface ICategoryService
@@ -32,13 +32,9 @@ namespace BussinessLogic.Services
                 throw new ArgumentException("Tên category không được để trống hoặc quá 50 ký tự. ");
             if (dto.Description.Length > 200)
                 throw new ArgumentException("Mô tả category không được quá 200 ký tự. ");
-            var category = new Category
-            {
-                Name = dto.Name,
-                Description = dto.Description
-            };
+            var category = CategoryMapper.ToEntity(dto);
             var created = await _repository.AddCategory(category);
-            return MapToDto(created);
+            return CategoryMapper.ToDto(created);
         }
 
         public async Task<CategoryDto> UpdateCategoryAsync(CategoryDto dto)
@@ -52,12 +48,11 @@ namespace BussinessLogic.Services
                 throw new ArgumentException("Tên category không được để trống hoặc quá 50 ký tự. ");
             if (dto.Description.Length > 200)
                 throw new ArgumentException("Mô tả category không được quá 200 ký tự. ");
-            existing.Name = dto.Name;
-            existing.Description = dto.Description;
+            CategoryMapper.UpdateEntity(existing, dto);
 
             var updated = await _repository.UpdateCategory(existing);
 
-            return MapToDto(updated);
+            return CategoryMapper.ToDto(updated);
         }
 
         public async Task DeleteCategoryAsync(int id)
@@ -75,7 +70,7 @@ namespace BussinessLogic.Services
             if (category == null)
                 throw new KeyNotFoundException($"Không tìm thấy category id : {id}");
 
-            return MapToDto(category);
+            return CategoryMapper.ToDto(category);
         }
 
         public async Task<List<CategoryDto>> GetAllCategoriesAsync()
@@ -83,17 +78,8 @@ namespace BussinessLogic.Services
             var categories = await _repository.GetAllCategories();
             if (categories == null)
                 throw new ArgumentException("Không lấy được danh sách");
-            return categories.Select(MapToDto).ToList();
+            return categories.Select(CategoryMapper.ToDto).ToList();
         }
 
-        private CategoryDto MapToDto(Category category)
-        {
-            return new CategoryDto
-            {
-                Id = category.Id,
-                Name = category.Name,
-                Description = category.Description
-            };
-        }
     }
 }

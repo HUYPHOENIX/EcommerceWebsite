@@ -1,6 +1,7 @@
 using BussinessLogic.Entities;
 using BussinessLogic.IRepository;
 using SharedViewModel.DTOs;
+using BusinessLogic.Mapper;
 
 namespace BussinessLogic.Services
 {
@@ -23,75 +24,73 @@ namespace BussinessLogic.Services
 
         public async Task<AuthResponseDto> LoginAsync(
             LoginRequestDto request,
-            string? requiredRole = null) 
+            string? requiredRole = null)
         {
             if (string.IsNullOrWhiteSpace(request.Email))
-                return new AuthResponseDto
-                {
-                    IsSuccess = false,
-                    Message = "Email không được trống"
-                };
+                return AuthMapper.ToResponseDto(
+                    false,
+                    "Email không được trống",
+                    new List<string>(),
+                    string.Empty);
 
             if (string.IsNullOrWhiteSpace(request.Password))
-                return new AuthResponseDto
-                {
-                    IsSuccess = false,
-                    Message = "Password không được trống"
-                };
+                return AuthMapper.ToResponseDto(
+                    false,
+                    "Password không được trống",
+                    new List<string>(),
+                    string.Empty);
 
             if (!IsValidEmail(request.Email))
-                return new AuthResponseDto
-                {
-                    IsSuccess = false,
-                    Message = "Email không hợp lệ"
-                };
+                return AuthMapper.ToResponseDto(
+                    false,
+                    "Email không hợp lệ",
+                    new List<string>(),
+                    string.Empty);
 
             var user = await _authRepository.FindByEmailAsync(request.Email);
             if (user == null)
-                return new AuthResponseDto
-                {
-                    IsSuccess = false,
-                    Message = "Email hoặc password không đúng"
-                };
+                return AuthMapper.ToResponseDto(
+                    false,
+                    "Email hoặc password không đúng",
+                    new List<string>(),
+                    string.Empty);
 
             var passwordValid = await _authRepository.ValidatePasswordAsync(user, request.Password);
             if (!passwordValid)
-                return new AuthResponseDto
-                {
-                    IsSuccess = false,
-                    Message = "Email hoặc password không đúng"
-                };
+                return AuthMapper.ToResponseDto(
+                     false,
+                     "Email hoặc password không đúng",
+                     new List<string>(),
+                     string.Empty);
 
             var roles = await _authRepository.GetRolesAsync(user);
 
             if (!string.IsNullOrEmpty(requiredRole) && !roles.Contains(requiredRole))
             {
-                return new AuthResponseDto
-                {
-                    IsSuccess = false,
-                    Message = $"Bạn không có quyền '{requiredRole}'"
-                };
+                return AuthMapper.ToResponseDto(
+                   false,
+                   $"Bạn không có quyền '{requiredRole}'",
+                   roles.ToList(),
+                   string.Empty);
             }
 
             var token = await _tokenService.GenerateAccessTokenAsync(user);
 
-            return new AuthResponseDto
-            {
-                IsSuccess = true,
-                Message = "Login thành công",
-                AccessToken = token,
-                Roles = roles.ToList()
-            };
+            return AuthMapper.ToResponseDto(
+                true,
+                "Login thành công",
+                roles.ToList(),
+                token);
         }
 
         public async Task<AuthResponseDto> LoginCustomerAsync(LoginRequestDto request)
         {
-            return await LoginAsync(request);  
+            return await LoginAsync(request);
         }
 
         public async Task<AuthResponseDto> LoginAdminAsync(LoginRequestDto request)
         {
-            return await LoginAsync(request, "Admin");  
+            return await LoginAsync(request, "Admin");
         }
 
         public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto request)
@@ -102,62 +101,53 @@ namespace BussinessLogic.Services
                 string.IsNullOrWhiteSpace(request.FirstName) ||
                 string.IsNullOrWhiteSpace(request.LastName))
             {
-                return new AuthResponseDto
-                {
-                    IsSuccess = false,
-                    Message = "Tất cả các field không được để trống",
-                    AccessToken = string.Empty,
-                };
+                return AuthMapper.ToResponseDto(
+                    false,
+                    "Tất cả các field không được để trống",
+                    new List<string>(),
+                    string.Empty);
             }
 
             if (!IsValidEmail(request.Email))
-                return new AuthResponseDto
-                {
-                    IsSuccess = false,
-                    Message = "Email không hợp lệ,"
-
-                };
-
+                return AuthMapper.ToResponseDto(
+                    false,
+                    "Email không hợp lệ",
+                    new List<string>(),
+                    string.Empty);
             if (!IsValidPassword(request.Password))
-                return new AuthResponseDto
-                {
-                    IsSuccess = false,
-                    Message = "Password phải có ít nhất 8 ký tự, chứa chữ hoa, chữ thường, số"
-                };
+                return AuthMapper.ToResponseDto(
+                    false,
+                    "Password phải có ít nhất 8 ký tự, chứa chữ hoa, chữ thường, số",
+                    new List<string>(),
+                    string.Empty);
 
             var existingUser = await _authRepository.FindByEmailAsync(request.Email);
             if (existingUser != null)
-                return new AuthResponseDto
-                {
-                    IsSuccess = false,
-                    Message = "Email đã được sử dụng"
-                };
-            var user = new User
-            {
-                UserName = request.Email,
-                Email = request.Email,
-                FirstName = request.FirstName,
-                LastName = request.LastName
-            };
+                return AuthMapper.ToResponseDto(
+                    false,
+                    "Email đã được sử dụng",
+                    new List<string>(),
+                    string.Empty);
+            var user = AuthMapper.ToEntity(request);
+            user.UserName = request.Email;
 
             try
             {
                 user = await _authRepository.CreateUserAsync(user, request.Password);
                 await _authRepository.AddToRoleAsync(user, "Customer");
-                return new AuthResponseDto
-                {
-                    IsSuccess = true,
-                    Message = "Đăng ký thành công",
-                };
+                return AuthMapper.ToResponseDto(
+                    true,
+                    "Đăng ký thành công",
+                    new List<string> { "Customer" },
+                    string.Empty);
             }
             catch (Exception ex)
             {
-                return new AuthResponseDto
-                {
-                    IsSuccess = false,
-                    Message = $"Lỗi đăng ký: {ex.Message}"
-                };
-
+                return AuthMapper.ToResponseDto(
+                   false,
+                   $"Lỗi đăng ký: {ex.Message}",
+                   new List<string>(),
+                   string.Empty);
             }
         }
 

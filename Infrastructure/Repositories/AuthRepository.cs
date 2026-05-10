@@ -26,14 +26,8 @@ namespace Infrastructure.Repositories
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            var result = await _userManager.CreateAsync(user, password);
+            await _userManager.CreateAsync(user, password);
             
-            if (!result.Succeeded)
-            {
-                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-                throw new InvalidOperationException($"Tạo user bị lỗi: {errors}");
-            }
-
             return user;
         }
 
@@ -48,19 +42,14 @@ namespace Infrastructure.Repositories
         public async Task AddToRoleAsync(User user, string role)
         {
             if (user == null || string.IsNullOrWhiteSpace(role))
-                throw new ArgumentException("Không có user hoặc role không đúng.");
-
-            var result = await _userManager.AddToRoleAsync(user, role);
-            
-            if (!result.Succeeded)
-                throw new InvalidOperationException($"Không thể add role: {role}");
+            throw new ArgumentException("Không có user hoặc role không đúng.");
+            await _userManager.AddToRoleAsync(user, role);
         }
 
         public async Task<IList<string>> GetRolesAsync(User user)
         {
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
-
             return await _userManager.GetRolesAsync(user);
         }
     }

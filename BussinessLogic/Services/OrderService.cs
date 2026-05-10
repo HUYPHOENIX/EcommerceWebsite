@@ -1,7 +1,7 @@
 using BussinessLogic.Entities;
 using BussinessLogic.IRepository;
-using Microsoft.AspNetCore.Http.Features;
 using SharedViewModel.DTOs;
+using BusinessLogic.Mapper;
 
 namespace BussinessLogic.Services
 {
@@ -32,9 +32,7 @@ namespace BussinessLogic.Services
                     .Select(x => x.ProductId)
                     .Distinct()
                     .ToList();
-
-            var existingProducts = await _productRepository.GetProductsByID(productIds);
-
+            var existingProducts = await _productRepository.GetProductsByIDAsync(productIds);
             if (existingProducts.Count != productIds.Count)
             {
                 var foundIds = existingProducts.Select(p => p.Id).ToList();
@@ -42,10 +40,8 @@ namespace BussinessLogic.Services
                 throw new ArgumentException(
                     $"Sản phẩm không tồn tại: {string.Join(", ", missingIds)}");
             }
-
             // Thêm dictionary "Mục luc" ra là bụp liền không cần duyệt lại từ đầu đến cuối của existingProducts
             var productDict = existingProducts.ToDictionary(p => p.Id);
-
             var orderItems = new List<OrderItem>();
             decimal totalPrice = 0;
 
@@ -55,40 +51,15 @@ namespace BussinessLogic.Services
 
                 if (item.Quantity <= 0)
                     throw new ArgumentException($"Số lượng không hợp lệ cho sản phẩm {product.Name}");
+                orderItems.Add(OrderMapper.ToOrderItem(product, item));
 
-                var actualPrice = product.Price;
-
-                orderItems.Add(new OrderItem
-                {
-                    ProductId = item.ProductId,
-                    ProductName = product.Name,        
-                    Price = actualPrice,               
-                    Size = item.Size,                  
-                    Color = item.Color,                
-                    Quantity = item.Quantity
-                });
-
-                totalPrice += actualPrice * item.Quantity;
+                totalPrice += product.Price * item.Quantity;
             }
-            var newOrder = new Order
-            {
-                UserId = userId,
-                TotalPrice = totalPrice,  
-                OrderDate = DateTime.UtcNow,
-                OrderItems = orderItems
-            };
+            var newOrder = OrderMapper.ToEntity(userId, totalPrice, orderItems);
 
             var createdOrder = await _orderRepository.CreateOrderAsync(newOrder);
 
-            var responseDto = new OrderResponseDto
-            {
-                OrderId = createdOrder.Id,
-                OrderDate = newOrder.OrderDate,
-                TotalPrice = totalPrice,
-                Items = request.Items.ToList()
-            };
-
-            return responseDto;
+            return OrderMapper.ToResponseDto(createdOrder, request.Items.ToList());
         }
     }
 }
