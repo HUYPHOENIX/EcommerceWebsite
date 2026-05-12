@@ -34,8 +34,8 @@ namespace BussinessLogic.Services
             if (name.Length < 3)
                 throw new ArgumentException("Tên sản phẩm phải có ít nhất 3 ký tự");
 
-            if (name.Length > 200)
-                throw new ArgumentException("Tên sản phẩm không được vượt quá 200 ký tự");
+            if (name.Length > 100)
+                throw new ArgumentException("Tên sản phẩm không được vượt quá 100 ký tự");
         }
 
         private void ValidateDescription(string? description)
@@ -61,16 +61,16 @@ namespace BussinessLogic.Services
             if (sizes == null || sizes.Count == 0)
                 throw new ArgumentException("Sản phẩm phải có ít nhất một size");
 
-            if (sizes.Count > 50)
-                throw new ArgumentException("Sản phẩm không được có quá 50 sizes");
+            if (sizes.Count > 10)
+                throw new ArgumentException("Sản phẩm không được có quá 10 sizes");
 
             foreach (var size in sizes)
             {
                 if (string.IsNullOrWhiteSpace(size))
                     throw new ArgumentException("Size không được để trống");
 
-                if (size.Length > 50)
-                    throw new ArgumentException("Tên size không được vượt quá 50 ký tự");
+                if (size.Length >10)
+                    throw new ArgumentException("Tên size không được vượt quá 10 ký tự");
             }
         }
 
@@ -98,7 +98,7 @@ namespace BussinessLogic.Services
         private void ValidateImageUrl(string? imageUrl)
         {
             if (string.IsNullOrWhiteSpace(imageUrl))
-                return; 
+                throw new ArgumentException("Image Không được trống.");
             if (!Uri.TryCreate(imageUrl, UriKind.Absolute, out _))
                 throw new ArgumentException("Image URL không hợp lệ");
         }

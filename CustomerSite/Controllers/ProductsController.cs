@@ -11,7 +11,7 @@ public class ProductsController : Controller
     }
     public async Task<IActionResult> Index(int? categoryId, int page = 1)
     {
-        //Index just need to receivcd cateId or Page number and Item in it will be set hardcode
+        //Index just need to received cateId or Page number and Item in it will be set hardcode
         int ItemInPage = 6;
         var pagedProducts = await _productApiService.GetProductsByPageAsync(categoryId, page, ItemInPage);
         if (pagedProducts == null)

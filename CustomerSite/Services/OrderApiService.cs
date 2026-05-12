@@ -25,7 +25,7 @@ public class OrderApiService: IOrderApiService
         if (response.IsSuccessStatusCode)
         {
             var result = await response.Content.ReadFromJsonAsync<OrderResponseDto>();
-            return result?.OrderId; 
+            return result.OrderId;
         }
         return null;
     }

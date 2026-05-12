@@ -46,10 +46,11 @@ public class PaymentController : Controller
         };
 
         var newOrderId = await  _orderApiService.CreateOrderAsync(orderRequest, accessToken!);
+
         if (newOrderId.HasValue)
         {
             _cartService.ClearCart();
-            return RedirectToAction("Success", new { id = newOrderId.Value });
+            return RedirectToAction("Success", new { id = newOrderId });
         }
         ModelState.AddModelError("", "Không thanh toán được đơn hàng. Vui lòng thử lại.");
         return View("Index", cart);

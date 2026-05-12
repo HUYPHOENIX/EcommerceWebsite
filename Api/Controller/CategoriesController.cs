@@ -49,7 +49,7 @@ public class CategoriesController : ControllerBase
         }
     }
 
-    [HttpPost("Create")]
+    [HttpPost]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create([FromBody] CategoryDto request)
     {
@@ -76,7 +76,7 @@ public class CategoriesController : ControllerBase
         }
     }
 
-    [HttpPut("Update/{id}")]
+    [HttpPut("{id}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Update(int id, [FromBody] CategoryDto request)
     {
@@ -108,7 +108,7 @@ public class CategoriesController : ControllerBase
         }
     }
 
-    [HttpDelete("Delete/{id}")]
+    [HttpDelete("{id}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id)
     {
@@ -117,9 +117,9 @@ public class CategoriesController : ControllerBase
             await _service.DeleteCategoryAsync(id);
             return NoContent();
         }
-        catch (KeyNotFoundException ex)
+        catch (KeyNotFoundException)
         {
-            return NotFound(new { message = ex.Message });
+            return NotFound(new { message = "404 Không tìm thấy sản phẩm." });
         }
         catch (Exception ex)
         {

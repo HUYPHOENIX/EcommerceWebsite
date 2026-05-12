@@ -41,17 +41,21 @@ namespace BussinessLogic.Services
         {
             if (dto == null)
                 throw new ArgumentNullException(nameof(dto));
+
             var existing = await _repository.GetCategorybyID(dto.Id);
             if (existing == null)
                 throw new KeyNotFoundException($"Không tìm thấy category id : {dto.Id}");
-            if (dto.Name.Length > 50 || string.IsNullOrWhiteSpace(dto.Name))
-                throw new ArgumentException("Tên category không được để trống hoặc quá 50 ký tự. ");
-            if (dto.Description.Length > 200)
-                throw new ArgumentException("Mô tả category không được quá 200 ký tự. ");
+
+            if (string.IsNullOrWhiteSpace(dto.Name))
+                throw new ArgumentException("Tên category không được để trống.");
+            if (dto.Name.Length > 50)
+                throw new ArgumentException("Tên category không được quá 50 ký tự.");
+
+            if ( dto.Description.Length > 100)
+                throw new ArgumentException("Mô tả category không được quá 100 ký tự.");
+
             CategoryMapper.UpdateEntity(existing, dto);
-
             var updated = await _repository.UpdateCategory(existing);
-
             return CategoryMapper.ToDto(updated);
         }
 

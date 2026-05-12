@@ -36,10 +36,9 @@ namespace Api.Controller
                 var userId = GetUserIdFromToken();
 
                 var result = await _orderService.CreateOrderAsync(userId, request);
-
-                return StatusCode(201, new
+                return StatusCode(201, new OrderResponseDto
                 {
-                    data = result
+                    OrderId = result.OrderId
                 });
             }
             catch (ArgumentException ex)

@@ -18,7 +18,7 @@ namespace Api.Controllers
             _productService = productService;
         }
 
-        [HttpGet("GetAll")]
+        [HttpGet()]
         public async Task<ActionResult<IEnumerable<ProductListDto>>> GetAllProducts()
         {
             try
@@ -26,13 +26,13 @@ namespace Api.Controllers
                 var products = await _productService.GetAllProductsAsync();
                 return Ok(products);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, new { message = "Lỗi lấy danh sách sản phẩm", error = ex.Message });
+                return StatusCode(500, new { message = "Lỗi 500" });
             }
         }
 
-        [HttpGet()]
+        [HttpGet("Paged")]
         public async Task<IActionResult> GetProductsByPage(
             [FromQuery] int? categoryId,
             [FromQuery] int page = 1,
@@ -47,13 +47,13 @@ namespace Api.Controllers
             {
                 return BadRequest(new { message = ex.Message });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, new { message = "Lỗi lấy sản phẩm theo trang", error = ex.Message });
+                return StatusCode(500, new { message = "Lỗi 500" });
             }
         }
 
-        [HttpGet("GetOne/{id}")]
+        [HttpGet("{id}")]
         public async Task<ActionResult<ProductDetailDto>> GetProductById(int id)
         {
             try
@@ -69,13 +69,13 @@ namespace Api.Controllers
             {
                 return NotFound(new { message = ex.Message });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, new { message = "Lỗi lấy chi tiết sản phẩm", error = ex.Message });
+                return StatusCode(500, new { message = "Lỗi 500" });
             }
         }
 
-        [HttpPost("Create")]
+        [HttpPost()]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ProductDetailDto>> CreateProduct([FromBody] CreateProductRequest request)
         {
@@ -92,13 +92,13 @@ namespace Api.Controllers
             {
                 return BadRequest(new { message = ex.Message });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, new { message = "Lỗi tạo sản phẩm", error = ex.Message });
+                return StatusCode(500, new { message = "Lỗi 500" });
             }
         }
 
-        [HttpPut("Update/{id}")]
+        [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateProduct(int id, [FromBody] UpdateProductRequest request)
         {
@@ -119,13 +119,13 @@ namespace Api.Controllers
             {
                 return NotFound(new { message = ex.Message });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, new { message = "Lỗi cập nhật sản phẩm", error = ex.Message });
+                return StatusCode(500, new { message = "Lỗi 500" });
             }
         }
 
-        [HttpDelete("Delete/{id}")]
+        [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
@@ -142,9 +142,9 @@ namespace Api.Controllers
             {
                 return NotFound(new { message = ex.Message });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, new { message = "Lỗi xóa sản phẩm", error = ex.Message });
+                return StatusCode(500, new { message = "Lỗi 500" });
             }
         }
     }

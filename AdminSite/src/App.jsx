@@ -1,8 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./Pages/login";
 import Dashboard from "./Pages/DashBoard";
+import CategoryPage from "./Pages/CategoryPage";
 import AdminLayout from "./components/AdminLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ProductPage from "./Pages/ProductPage";
 function App() {
   return (
     <BrowserRouter>
@@ -18,8 +20,8 @@ function App() {
           }
         >
           <Route index element={<Dashboard />} />
-          <Route path="/admin/categories" element={<div>Category List</div>} />
-          <Route path="/admin/products" element={<div>Product List</div>} />
+          <Route path="/admin/categories" element={<CategoryPage />} />
+          <Route path="/admin/products" element={<div><ProductPage /></div>} />
         </Route>
         <Route
           path="*"

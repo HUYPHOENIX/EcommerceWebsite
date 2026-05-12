@@ -52,7 +52,7 @@ namespace Api.Controllers
                 return BadRequest(ModelState);
 
             var result = await _authService.LoginAdminAsync(request);
-
+            
             if (!result.IsSuccess)
                 return Unauthorized(new { message = result.Message });
 

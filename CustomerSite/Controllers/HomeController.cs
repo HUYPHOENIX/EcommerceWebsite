@@ -12,11 +12,7 @@ public class HomeController : Controller
     }
     public async Task<IActionResult> Index()
     {
-        var products = await _productApiService.GetAllProductsAsync();
-        if (products == null)
-        {
-            return NotFound();
-        }
-        return View(products);
+
+        return View();
     }
 }

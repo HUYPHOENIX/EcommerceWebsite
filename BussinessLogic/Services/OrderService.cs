@@ -58,7 +58,6 @@ namespace BussinessLogic.Services
             var newOrder = OrderMapper.ToEntity(userId, totalPrice, orderItems);
 
             var createdOrder = await _orderRepository.CreateOrderAsync(newOrder);
-
             return OrderMapper.ToResponseDto(createdOrder, request.Items.ToList());
         }
     }

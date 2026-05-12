@@ -3,8 +3,6 @@ using SharedViewModel.DTOs;
 
 namespace BusinessLogic.Mapper
 {
-
-
     public static class CategoryMapper
     {
         public static CategoryDto ToDto(Category category)
