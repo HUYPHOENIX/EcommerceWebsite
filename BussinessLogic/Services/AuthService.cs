@@ -2,6 +2,7 @@ using BussinessLogic.Entities;
 using BussinessLogic.IRepository;
 using SharedViewModel.DTOs;
 using BusinessLogic.Mapper;
+using Microsoft.AspNetCore.Identity;
 
 namespace BussinessLogic.Services
 {
@@ -14,12 +15,12 @@ namespace BussinessLogic.Services
 
     public class AuthService : IAuthService
     {
-        private readonly IAuthRepository _authRepository;
         private readonly ITokenService _tokenService;
-        public AuthService(IAuthRepository authRepository, ITokenService tokenRepository)
+        private readonly UserManager<User> _userManager;
+        public AuthService(ITokenService tokenRepository, UserManager<User> userManager)
         {
-            _authRepository = authRepository;
             _tokenService = tokenRepository;
+            _userManager = userManager;
         }
 
         public async Task<AuthResponseDto> LoginAsync(
@@ -47,7 +48,7 @@ namespace BussinessLogic.Services
                     new List<string>(),
                     string.Empty);
 
-            var user = await _authRepository.FindByEmailAsync(request.Email);
+            var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null)
                 return AuthMapper.ToResponseDto(
                     false,
@@ -55,7 +56,7 @@ namespace BussinessLogic.Services
                     new List<string>(),
                     string.Empty);
 
-            var passwordValid = await _authRepository.ValidatePasswordAsync(user, request.Password);
+            var passwordValid = await _userManager.CheckPasswordAsync(user, request.Password);
             if (!passwordValid)
                 return AuthMapper.ToResponseDto(
                      false,
@@ -63,7 +64,7 @@ namespace BussinessLogic.Services
                      new List<string>(),
                      string.Empty);
 
-            var roles = await _authRepository.GetRolesAsync(user);
+            var roles = await _userManager.GetRolesAsync(user);
 
             if (!string.IsNullOrEmpty(requiredRole) && !roles.Contains(requiredRole))
             {
@@ -73,8 +74,14 @@ namespace BussinessLogic.Services
                    roles.ToList(),
                    string.Empty);
             }
-
-            var token = await _tokenService.GenerateAccessTokenAsync(user);
+            var newRequestToken = new TokenGenerationRequest
+            {
+                Email = user.Email ?? user.NormalizedEmail,
+                FirstName = user.FirstName,
+                Roles = roles,
+                UserId = user.Id
+            };
+            var token = await _tokenService.GenerateAccessTokenAsync(newRequestToken);
 
             return AuthMapper.ToResponseDto(
                 true,
@@ -95,7 +102,6 @@ namespace BussinessLogic.Services
 
         public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto request)
         {
-            // Validate input
             if (string.IsNullOrWhiteSpace(request.Email) ||
                 string.IsNullOrWhiteSpace(request.Password) ||
                 string.IsNullOrWhiteSpace(request.FirstName) ||
@@ -120,8 +126,7 @@ namespace BussinessLogic.Services
                     "Password phải có ít nhất 8 ký tự, chứa chữ hoa, chữ thường, số",
                     new List<string>(),
                     string.Empty);
-
-            var existingUser = await _authRepository.FindByEmailAsync(request.Email);
+            var existingUser = await _userManager.FindByEmailAsync(request.Email);
             if (existingUser != null)
                 return AuthMapper.ToResponseDto(
                     false,
@@ -130,25 +135,24 @@ namespace BussinessLogic.Services
                     string.Empty);
             var user = AuthMapper.ToEntity(request);
             user.UserName = request.Email;
+            var createResult = await _userManager.CreateAsync(user, request.Password);
 
-            try
+            if (!createResult.Succeeded)
             {
-                user = await _authRepository.CreateUserAsync(user, request.Password);
-                await _authRepository.AddToRoleAsync(user, "Customer");
                 return AuthMapper.ToResponseDto(
-                    true,
-                    "Đăng ký thành công",
-                    new List<string> { "Customer" },
+                    false,
+                    $"Lỗi đăng ký: {string.Join(", ", createResult.Errors.Select(e => e.Description))}",
+                    new List<string>(),
                     string.Empty);
             }
-            catch (Exception ex)
-            {
-                return AuthMapper.ToResponseDto(
-                   false,
-                   $"Lỗi đăng ký: {ex.Message}",
-                   new List<string>(),
-                   string.Empty);
-            }
+
+            await _userManager.AddToRoleAsync(user, "Customer");
+
+            return AuthMapper.ToResponseDto(
+                true,
+                "Đăng ký thành công",
+                new List<string> { "Customer" },
+                string.Empty);
         }
 
         // Helper methods

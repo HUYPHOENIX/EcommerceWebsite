@@ -32,7 +32,6 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ICategoryRepository,CategoryRepository>();
 builder.Services.AddScoped<IProductRepository,ProductRepository>();
 builder.Services.AddScoped<IOrderRepository,OrderRepository>();
-builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 
 //-- Jwt Authentication ---
 var jwtSetting = builder.Configuration.GetSection("Authorization");
