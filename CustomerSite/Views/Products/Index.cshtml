@@ -1,9 +1,10 @@
 @model SharedViewModel.DTOs.PagedItems<SharedViewModel.DTOs.ProductListDto>
-
+@using SharedViewModel.DTOs
 @{
     ViewData["Title"] = "Our Products";
     // Grab the current category so we remember it when clicking "Next Page"
     var currentCategory = ViewBag.CurrentCategory as int?;
+    var categories = ViewBag.CateList as List<CategoryDto>;
 }
 
 <div class="container mt-4">
@@ -18,19 +19,20 @@
                     <h5 class="fw-bold mb-0">Loại sản phẩm</h5>
                 </div>
                 <div class="list-group list-group-flush">
-                    <a asp-action="Index" asp-route-categoryId="" asp-route-page="1" 
-                       class="list-group-item list-group-item-action @(currentCategory == null ? "active fw-bold" : "")">
+                    <a asp-action="Index" asp-route-categoryId="" asp-route-page="1"
+                           class="list-group-item list-group-item-action @(currentCategory == null ? "active fw-bold" : "")">
                         Tất cả sản phẩm
                     </a>
-                    
-                    <a asp-action="Index" asp-route-categoryId="1" asp-route-page="1"
-                       class="list-group-item list-group-item-action @(currentCategory == 1 ? "active fw-bold" : "")">1</a>
-                       
-                    <a asp-action="Index" asp-route-categoryId="2" asp-route-page="1"
-                       class="list-group-item list-group-item-action @(currentCategory == 2 ? "active fw-bold" : "")">2</a>
-                       
-                    <a asp-action="Index" asp-route-categoryId="3" asp-route-page="1"
-                       class="list-group-item list-group-item-action @(currentCategory == 3 ? "active fw-bold" : "")">3</a>
+                    @if (categories != null && categories.Any())
+                    {
+                        @foreach (var item in categories)
+                        {
+                            <a asp-action="Index" asp-route-categoryId="@item.Id" asp-route-page="1"
+                                   class="list-group-item list-group-item-action @(currentCategory == item.Id ? "active fw-bold" : "")">
+                                @item.Name
+                            </a>
+                        }
+                    }
                 </div>
             </div>
         </div>
@@ -52,11 +54,13 @@
                         <div class="card h-100 shadow-sm border-0">
                             @if (!string.IsNullOrEmpty(product.ImageUrl))
                             {
-                                <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name" style="height: 220px; object-fit: cover;">
+                                <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name"
+                                     style="height: 220px; object-fit: cover;">
                             }
                             else
                             {
-                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 220px;">
+                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
+                                     style="height: 220px;">
                                     <span class="text-muted"><i class="bi bi-image fs-1"></i></span>
                                 </div>
                             }
@@ -66,7 +70,8 @@
                                 <h6 class="text-primary mb-2">@product.Price.ToString("C")</h6>
                                 
                                 <div class="mt-auto pt-3">
-                                    <a asp-controller="Products" asp-action="Detail" asp-route-id="@product.Id" class="btn btn-outline-dark w-100 btn-sm">
+                                    <a asp-controller="Products" asp-action="Detail" asp-route-id="@product.Id"
+                                           class="btn btn-outline-dark w-100 btn-sm">
                                         Mua hàng
                                     </a>
                                 </div>
@@ -82,9 +87,8 @@
                     <ul class="pagination shadow-sm">
                         
                         <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
-                            <a class="page-link" asp-action="Index" 
-                               asp-route-categoryId="@currentCategory" 
-                               asp-route-page="@(Model.PageNumber - 1)">
+                            <a class="page-link" asp-action="Index" asp-route-categoryId="@currentCategory"
+                                   asp-route-page="@(Model.PageNumber - 1)">
                                 &laquo; Trở về
                             </a>
                         </li>
@@ -92,18 +96,16 @@
                         @for (int i = 1; i <= Model.TotalPages; i++)
                         {
                             <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                                <a class="page-link" asp-action="Index" 
-                                   asp-route-categoryId="@currentCategory" 
-                                   asp-route-page="@i">
+                                <a class="page-link" asp-action="Index" asp-route-categoryId="@currentCategory"
+                                       asp-route-page="@i">
                                     @i
                                 </a>
                             </li>
                         }
 
                         <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
-                            <a class="page-link" asp-action="Index" 
-                               asp-route-categoryId="@currentCategory" 
-                               asp-route-page="@(Model.PageNumber + 1)">
+                            <a class="page-link" asp-action="Index" asp-route-categoryId="@currentCategory"
+                                   asp-route-page="@(Model.PageNumber + 1)">
                                 Tiếp theo &raquo;
                             </a>
                         </li>

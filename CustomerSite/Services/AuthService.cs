@@ -6,11 +6,9 @@ namespace CustomerSite.Services;
 public class AuthService : IAuthService
 {
     private readonly HttpClient _httpClient;
-    private readonly ILogger<AuthService> _logger;
     public AuthService(HttpClient httpClient, ILogger<AuthService> logger)
     {
         _httpClient = httpClient;
-        _logger = logger;
     }
     public async Task<AuthResponseDto> LoginAsync(LoginRequestDto request)
     {

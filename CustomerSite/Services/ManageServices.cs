@@ -17,6 +17,7 @@ namespace CustomerSite.Services
             services.AddHttpClient<IProductApiService, ProductApiService>(configureClient);
             services.AddHttpClient<IOrderApiService, OrderApiService>(configureClient);
             services.AddHttpClient<IAuthService, AuthService>(configureClient);
+            services.AddHttpClient<ICategoryApiService , CategoryService>(configureClient);
             return services;
         }
 

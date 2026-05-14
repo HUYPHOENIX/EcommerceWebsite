@@ -10,9 +10,21 @@ public class HomeController : Controller
     {
         _productApiService = productApiClient;
     }
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int? categoryId, int page = 1)
     {
+        int ItemInPage = 4;
+        var pagedProducts = await _productApiService.GetProductsByPageAsync(categoryId, page, ItemInPage);
+        if (pagedProducts == null)
+        {
+            TempData["ErrorMessage"] = "Không Thể kết nối đến Api.";
+            return RedirectToAction("Error", "Home");
+        }
+        ViewBag.CurrentCategory = categoryId;
+        return View(pagedProducts);
+    }
 
+    public IActionResult Error()
+    {
         return View();
     }
 }

@@ -12,15 +12,22 @@ namespace CustomerSite.Services
         {
             _httpClient = httpClient;
         }
-        public async Task<PagedItems<ProductListDto>?> GetProductsByPageAsync(int? categoryId, int page, int pageSize)
+        public async Task<PagedItems<ProductListDto>?> GetProductsByPageAsync(
+            int? categoryId, int page, int pageSize)
         {
-            var url = $"/api/products/Paged?page={page}&pageSize={pageSize}";
-
-            if (categoryId.HasValue && categoryId.Value > 0)
+            try
             {
-                url += $"&categoryId={categoryId.Value}";
+                var url = $"/api/products/Paged?page={page}&pageSize={pageSize}";
+
+                if (categoryId.HasValue && categoryId.Value > 0)
+                    url += $"&categoryId={categoryId.Value}";
+
+                return await _httpClient.GetFromJsonAsync<PagedItems<ProductListDto>>(url);
             }
-            return await _httpClient.GetFromJsonAsync<PagedItems<ProductListDto>>(url);
+            catch (HttpRequestException)
+            {
+                return null; 
+            }
         }
 
         public async Task<ProductDetailDto?> GetProductByIdAsync(int id)

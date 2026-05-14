@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using BusinessLogic.Mapper;
 using BussinessLogic.IRepository;
 using SharedViewModel.DTOs;
@@ -16,7 +17,7 @@ namespace BussinessLogic.Services
         Task<ProductDetailDto> UpdateProductAsync(int id, UpdateProductRequest request);
         Task DeleteProductAsync(int id);
     }
-    
+
     public class ProductService : IProductService
     {
         private readonly IProductRepository _repository;
@@ -41,7 +42,7 @@ namespace BussinessLogic.Services
         private void ValidateDescription(string? description)
         {
             if (string.IsNullOrWhiteSpace(description))
-                return; 
+                return;
 
             if (description.Length > 2000)
                 throw new ArgumentException("Mô tả sản phẩm không được vượt quá 2000 ký tự");
@@ -69,7 +70,7 @@ namespace BussinessLogic.Services
                 if (string.IsNullOrWhiteSpace(size))
                     throw new ArgumentException("Size không được để trống");
 
-                if (size.Length >10)
+                if (size.Length > 10)
                     throw new ArgumentException("Tên size không được vượt quá 10 ký tự");
             }
         }
@@ -128,12 +129,14 @@ namespace BussinessLogic.Services
             if (pageNumber < 1)
                 pageNumber = 1;
 
-            if (pageSize < 1 || pageSize > 50)
+            if (pageSize < 1 || pageSize > 12)
                 pageSize = 12;
-
             var (items, totalCount) = await _repository.GetProductsByPageAsync(
-                categoryId, pageNumber, pageSize);
-
+            categoryId, pageNumber, pageSize);
+            if (items == null)
+            {
+                throw new ArgumentNullException("Danh sách bị rỗng khi lấy từ dưới DB lên.");
+            }
             return new PagedItems<ProductListDto>
             {
                 Items = items.Select(ProductMapper.ToListDto).ToList(),
@@ -141,6 +144,7 @@ namespace BussinessLogic.Services
                 PageNumber = pageNumber,
                 PageSize = pageSize
             };
+
         }
 
 
